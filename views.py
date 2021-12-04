@@ -1,5 +1,5 @@
 from flask import render_template, request, redirect, session, flash, url_for, send_from_directory
-from server import app, db
+from app import app, db
 
 from dao import MangasDao
 
@@ -14,7 +14,7 @@ def home():
 @app.route('/mangas')
 def mangas():
     pass
-    # return render_template('template.html')
+    # return render_template('mangas.html')
 
 @app.route('/manga/<name>')
 def manga(name):
@@ -36,8 +36,7 @@ def addUser():
 
 @app.route('/login')
 def login():
-    pass
-    # return render_template('template.html')
+    return render_template('login.html')
 
 
 @app.route('/signout')

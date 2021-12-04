@@ -3,7 +3,7 @@
 <div class="flex flex-cols flex-wrap gap-8 lg:gap-4 grid grid-cols-1 lg:grid-cols-2 md:items-center">
     {% for manga in mangas %}
     <!-- Start of component -->
-    <a href='{{ url_for('manga', name=manga.name) }}'>
+    <a href='https://alyah.herokuapp.com/manga/{{ manga.name }}'>
         <div
             class="h-full lg:h-1/2 bg-color-secundary md:col-span-1 text-white p-8 lg:p-5 rounded-md tracking-wide shadow-lg">
             <div id="header" class="flex">
@@ -26,4 +26,5 @@
     </a>
     <!-- End of component -->
     {% endfor%}
-    {% endblock %}
+</div>
+{% endblock %}

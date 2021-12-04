@@ -16,12 +16,54 @@
         <header class="text-gray-100 body-font shadow w-full">
             <div class="container mx-auto flex flex-wrap p-12 lg:p-5 flex-col md:flex-row items-center text-white">
                 <nav class="flex lg:w-2/5 flex-wrap items-center text-3xl lg:text-base md:ml-auto">
-                    <a href="{{url_for('mangas')}}"
-                        class="mr-16 lg:mr-5 hover:text-white-900 cursor-pointer border-b border-transparent hover:border-green-600">Manage
-                        Mangas</a>
-                    <a href="{{url_for('chapters')}}"
-                        class="lg:mr-5 hover:text-white-900 cursor-pointer border-b border-transparent hover:border-green-600">
-                        Manage Chapters</a>
+                    <div class="mr-16 lg:mr-5">
+                        <span class="rounded-md shadow-sm"><button id="manage_mangas"
+                                class="bg-color-secundary-dark inline-flex justify-center w-full px-4 py-2 text-sm font-medium leading-5 text-white ease-in-out hover:bg-white border border-gray-300 rounded-md hover:text-black focus:outline-none focus:outline-none active:bg-white active:text-black"
+                                type="button" aria-haspopup="true" aria-expanded="true"
+                                aria-controls="headlessui-menu-items-117">
+                                <span>Manage Mangas</span>
+                            </button></span>
+                        <div id="menu_mangas" class="invisible dropdown-menu transform">
+                            <div class="absolute w-full mt-2 origin-top-right bg-white border border-gray-200 divide-y divide-gray-100 rounded-md shadow-lg outline-none"
+                                aria-labelledby="headlessui-menu-button-1" id="headlessui-menu-items-117" role="menu">
+                                <div class="py-1">
+                                    <a href="javascript:void(0)" tabindex="1"
+                                        class="text-black flex justify-between w-full px-4 py-2 text-3xl lg:text-sm leading-5 text-left"
+                                        role="menuitem">Create</a>
+                                    <a href="javascript:void(0)" tabindex="1"
+                                        class="text-gray-700 flex justify-between w-full px-4 py-2 text-3xl lg:text-sm leading-5 text-left"
+                                        role="menuitem">Update</a>
+                                    <a href="javascript:void(0)" tabindex="1"
+                                        class="text-gray-700 flex justify-between w-full px-4 py-2 text-3xl lg:text-sm leading-5 text-left"
+                                        role="menuitem">Delete</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mr-16 lg:mr-5">
+                        <span class="rounded-md shadow-sm"><button id="manage_chapters"
+                                class="bg-color-secundary-dark inline-flex justify-center w-full px-4 py-2 text-sm font-medium leading-5 text-white ease-in-out hover:bg-white border border-gray-300 rounded-md hover:text-black focus:outline-none focus:outline-none active:bg-white active:text-black"
+                                type="button" aria-haspopup="true" aria-expanded="true"
+                                aria-controls="headlessui-menu-items-117">
+                                <span>Manage Chapters</span>
+                            </button></span>
+                        <div id="menu_chapters" class="invisible dropdown-menu transform">
+                            <div class="absolute w-full mt-2 origin-top-right bg-white border border-gray-200 divide-y divide-gray-100 rounded-md shadow-lg outline-none"
+                                aria-labelledby="headlessui-menu-button-1" id="headlessui-menu-items-117" role="menu">
+                                <div class="py-1">
+                                    <a href="javascript:void(0)" tabindex="1"
+                                        class="text-black flex justify-between w-full px-4 py-2 text-3xl lg:text-sm leading-5 text-left"
+                                        role="menuitem">Create</a>
+                                    <a href="javascript:void(0)" tabindex="1"
+                                        class="text-gray-700 flex justify-between w-full px-4 py-2 text-3xl lg:text-sm leading-5 text-left"
+                                        role="menuitem">Update</a>
+                                    <a href="javascript:void(0)" tabindex="1"
+                                        class="text-gray-700 flex justify-between w-full px-4 py-2 text-3xl lg:text-sm leading-5 text-left"
+                                        role="menuitem">Delete</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </nav>
                 <a href="{{url_for('home')}}"
                     class="flex order-first lg:order-none lg:w-1/5 title-font font-medium items-center lg:items-center lg:justify-center mb-4 md:mb-0">
@@ -76,8 +118,8 @@
                 <div
                     class="bg-color-secundary-dark origin-top-right absolute right-1 mt-2 w-52 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
                     <div class="py-1">
-                        <a href="{{url_for('login')}}" class="text-2xl lg:text-sm block px-4 py-9 text-sm text-white" tabindex="-1"
-                            id="menu-item-0">Log in</a>
+                        <a href="{{url_for('login')}}" class="text-2xl lg:text-sm block px-4 py-9 text-sm text-white"
+                            tabindex="-1" id="menu-item-0">Log in</a>
                     </div>
                 </div>
                 {% endif %}
@@ -150,6 +192,38 @@
             } else {
                 $('#open').addClass('hidden');
                 $('#close').removeClass('hidden')
+            }
+        });
+    </script>
+    <script>
+        // Grab HTML Elements
+        const btn_mangas = document.querySelector("button#manage_mangas");
+        const menu_mangas = document.querySelector("#menu_mangas");
+        // Add Event Listeners
+        btn_mangas.addEventListener("click", () => {
+            menu_mangas.classList.toggle('invisible');
+            if ($("#menu_mangas").hasClass("invisible")) {
+                $("#menu_mangas").removeClass('invisible');
+                $("#menu_mangas").addClass('invisible')
+            } else {
+                $("#menu_mangas").addClass('invisible');
+                $("#menu_mangas").removeClass('invisible')
+            }
+        });
+    </script>
+    <script>
+        // Grab HTML Elements
+        const btn_chapters = document.querySelector("button#manage_chapters");
+        const menu_chapters = document.querySelector("#menu_chapters");
+        // Add Event Listeners
+        btn_chapters.addEventListener("click", () => {
+            menu_chapters.classList.toggle('invisible');
+            if ($("#menu_chapters").hasClass("invisible")) {
+                $("#menu_chapters").removeClass('invisible');
+                $("#menu_chapters").addClass('invisible')
+            } else {
+                $("#menu_chapters").addClass('invisible');
+                $("#menu_chapters").removeClass('invisible')
             }
         });
     </script>

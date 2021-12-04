@@ -13,9 +13,11 @@ html, body {
     height: 100%;
     /* Needed for container's min-height  */
 }
-.container-all{
-    min-height:100%;
-    padding-bottom: 40px; /* Put height of the footer here. Needed for higher than screen height pages */
+
+.container-all {
+    min-height: 100%;
+    padding-bottom: 40px;
+    /* Put height of the footer here. Needed for higher than screen height pages */
 }
 
 .color-primary {
@@ -230,45 +232,55 @@ img#profile-edit {
         width: 200px;
         height: 34px;
     }
+
     .logo-header {
         height: 34px;
     }
+
     img#profile {
         bottom: 0;
         width: 100px;
         height: 100px;
     }
+
     .manga-fav img {
         width: 400px;
         height: 225px;
         background-size: 100%;
         background-repeat: no-repeat
     }
+
     .nav-lg {
         display: flex;
     }
+
     img#profile-edit {
         bottom: 0;
         width: 50px;
         height: 50px;
     }
+
     .manga img {
         max-width: 400px;
         max-height: 225px;
         width: auto;
         height: auto
     }
+
     .favorited svg {
         width: 32px;
         height: 35px
     }
+
     .favorite svg {
         width: 40px;
         height: 35px;
     }
+
     .fav {
         display: none;
     }
+
     .fullscreen-btn svg {
         width: 24px;
         height: 24px;
@@ -283,4 +295,10 @@ img#profile-edit {
 .fail {
     background-color: red;
     height: 5px
+}
+
+.dropdown:focus-within .dropdown-menu {
+    opacity: 1;
+    transform: translate(0) scale(1);
+    visibility: visible;
 }

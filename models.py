@@ -5,3 +5,8 @@ class Mangas:
         self.author = author
         self.cover = cover
         self.id = id
+
+class Author: 
+    def __init__(self, name, id=None):
+        self.name = name
+        self.id = id
