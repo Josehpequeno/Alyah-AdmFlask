@@ -1,5 +1,4 @@
 from models import Mangas, Author
-import json
 
 class MangasDao:
     def __init__(self, db):
