@@ -6,10 +6,11 @@ import os
 from db import db
 
 app = Flask(__name__) 
+app.config.from_pyfile('config.py')
 # app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get("DATABASE_URL")
 # db = SQLAlchemy(app)
 
 from views import * #só importar depois da config do app.
 
 if __name__ == '__main__':
-    app.run(debug=os.environ.get("DEBUG"))
+    app.run()

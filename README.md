@@ -48,10 +48,8 @@ $ cd Alyah-AdmFlask
 
 # Install the dependencies
 $ pip install psycopg2-binary
-$ pip install flask-sqlalchemy
-$ pip install Flask-Migrate
 $ pip install python-dotenv
-$ pip install Flask==1.1.2 Flask-Assets==2.0
+$ pip install Flask==2.0.2 Flask-Assets==2.0
 
 # Run the application
 $ python3 app.py

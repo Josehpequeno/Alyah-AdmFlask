@@ -3,6 +3,9 @@ from app import app, db
 
 from dao import MangasDao
 
+from models import Administrator
+
+
 @app.route('/')  # definição de uma rota
 def home():
     manga_dao = MangasDao(db)
@@ -16,6 +19,7 @@ def mangas():
     pass
     # return render_template('mangas.html')
 
+
 @app.route('/manga/<name>')
 def manga(name):
     pass
@@ -28,10 +32,25 @@ def chapters():
     # return render_template('template.html')
 
 
-@app.route('/addUser')
+@app.route('/addUser', methods=['GET', 'POST'])
 def addUser():
-    pass
-    # return render_template('template.html')
+    if request.method == 'GET':
+        return render_template('addUser.html')
+    else:
+        name = request.form['name']
+        email = request.form['email']
+        password = request.form['password']
+        confirm_password = request.form['confirm-password']
+        adm = Administrator(name, email, password)
+        check = Administrator.checkAdm(adm, name, email, password)
+        if check != True:
+            flash(check)
+            return render_template('addUser.html', adm=adm, error=True)
+        if confirm_password != password:
+            flash('Passwords do not match')
+            return render_template('addUser.html', adm=adm, error=True)
+        flash('Administrator added successfully')
+        return render_template('addUser.html', adm=adm, sucess=True)
 
 
 @app.route('/login')
