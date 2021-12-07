@@ -27,13 +27,13 @@
                             <div class="absolute w-full mt-2 origin-top-right bg-white border border-gray-200 divide-y divide-gray-100 rounded-md shadow-lg outline-none"
                                 aria-labelledby="headlessui-menu-button-1" id="headlessui-menu-items-117" role="menu">
                                 <div class="py-1">
-                                    <a href="javascript:void(0)" tabindex="1"
+                                    <a href="{{url_for('mangas', option='Create')}}" tabindex="1"
                                         class="text-black flex justify-between w-full px-4 py-2 text-3xl lg:text-sm leading-5 text-left"
                                         role="menuitem">Create</a>
-                                    <a href="javascript:void(0)" tabindex="1"
+                                    <a href="{{url_for('mangas', option='Update')}}" tabindex="1"
                                         class="text-gray-700 flex justify-between w-full px-4 py-2 text-3xl lg:text-sm leading-5 text-left"
                                         role="menuitem">Update</a>
-                                    <a href="javascript:void(0)" tabindex="1"
+                                    <a href="{{url_for('mangas', option='Delete')}}" tabindex="1"
                                         class="text-gray-700 flex justify-between w-full px-4 py-2 text-3xl lg:text-sm leading-5 text-left"
                                         role="menuitem">Delete</a>
                                 </div>
@@ -51,13 +51,13 @@
                             <div class="absolute w-full mt-2 origin-top-right bg-white border border-gray-200 divide-y divide-gray-100 rounded-md shadow-lg outline-none"
                                 aria-labelledby="headlessui-menu-button-1" id="headlessui-menu-items-117" role="menu">
                                 <div class="py-1">
-                                    <a href="javascript:void(0)" tabindex="1"
+                                    <a href="{{url_for('chapters', option='Create')}}" tabindex="1"
                                         class="text-black flex justify-between w-full px-4 py-2 text-3xl lg:text-sm leading-5 text-left"
                                         role="menuitem">Create</a>
-                                    <a href="javascript:void(0)" tabindex="1"
+                                    <a href="{{url_for('chapters', option='Update')}}" tabindex="1"
                                         class="text-gray-700 flex justify-between w-full px-4 py-2 text-3xl lg:text-sm leading-5 text-left"
                                         role="menuitem">Update</a>
-                                    <a href="javascript:void(0)" tabindex="1"
+                                    <a href="{{url_for('chapters', option='Delete')}}" tabindex="1"
                                         class="text-gray-700 flex justify-between w-full px-4 py-2 text-3xl lg:text-sm leading-5 text-left"
                                         role="menuitem">Delete</a>
                                 </div>
@@ -129,7 +129,7 @@
     <div id="content" class="md:container md:mx-auto min-h-screen pt-20 pb-0">
         {% block conteudo %}{% endblock %}
     </div>
-    <div class="bg-color-secundary-dark mt-24 bottom-0 py-2">
+    <div class="bg-color-secundary-dark mt-24 inset-x-0 bottom-0 py-2">
         <footer class="flex flex-wrap items-center justify-between p-3 m-auto">
             <div class="container mx-auto flex flex-col flex-wrap items-center justify-between">
                 <ul class="flex mx-auto text-white text-center">

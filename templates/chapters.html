@@ -42,53 +42,40 @@
             {% endwith %}
             <br />
             <h3 class="text-white text-5xl lg:text-xl self-center text-center py-12 lg:py-2 w-full mr-64 lg:mr-40">
-                {{option}} Manga</h3>
-            <form class="mt-4" method="POST" action="{{url_for('mangas'+option)}}">
+                {{option}} Chapter</h3>
+            <form class="mt-4" method="POST" action="{{url_for('chapters'+option)}}">
+                <select class="text-white w-full rounded-xl lg:rounded-md bg-color-secundary h-16 lg:h-8">
+                    <option>Select a Manga</option>
+                    <option>Manga 1</option>
+                    <option>Manga 2</option>
+                </select>
                 {% if option == 'Create'%}
-                <label class="block space-y-5 lg:space-y-2">
-                    <span class="text-white text-3xl lg:text-sm">Manga Name</span>
+                <label class="mt-6 block space-y-5 lg:space-y-2">
+                    <span class="text-white text-3xl lg:text-sm">Chapter Name</span>
                     <input id="name" name="name"
                         class="text-3xl lg:text-sm px-3 py-2 h-16 lg:h-8 form-input mt-1 block w-full rounded-xl lg:rounded-md bg-color-secundary border-gray-700 text-white"
-                        {%if manga %} value="{{manga.name}}" {% endif %} required autofocus>
+                        {%if chapter %} value="{{chapter.name}}" {% endif %} required autofocus>
                 </label>
                 {% elif option == 'Delete' %}
-                <select name="name" class="text-white w-full rounded-xl lg:rounded-md bg-color-secundary h-16 lg:h-8">
-                    <option>Select a Manga</option>
-                    <option>Manga 1</option>
-                    <option>Manga 2</option>
+                <select class="mt-6 text-white w-full rounded-xl lg:rounded-md bg-color-secundary h-16 lg:h-8">
+                    <option>Select a Chapter</option>
+                    <option>Chapter 1</option>
+                    <option>Chapter 2</option>
                 </select>
                 {% else %}
-                <select name="name" class="text-white w-full rounded-xl lg:rounded-md bg-color-secundary h-16 lg:h-8">
-                    <option>Select a Manga</option>
-                    <option>Manga 1</option>
-                    <option>Manga 2</option>
+                <select class="mt-6 text-white w-full rounded-xl lg:rounded-md bg-color-secundary h-16 lg:h-8">
+                    <option>Select a Chapter</option>
+                    <option>Chapter 1</option>
+                    <option>Chapter 2</option>
                 </select>
                 <label class="mt-6 block space-y-5 lg:space-y-2">
-                    <span class="text-white text-3xl lg:text-sm">Manga Name</span>
+                    <span class="text-white text-3xl lg:text-sm">Chapter Name</span>
                     <input id="name" name="name"
                         class="text-3xl lg:text-sm px-3 py-2 h-16 lg:h-8 form-input mt-1 block w-full rounded-xl lg:rounded-md bg-color-secundary border-gray-700 text-white"
-                        {%if manga %} value="{{manga.name}}" {% endif %} required autofocus>
+                        {%if chapter %} value="{{chapter.name}}" {% endif %} required autofocus>
                 </label>
                 {% endif %}
-                {% if option != 'Delete' %}
-                <label class="mt-6 lg:mt-3 block space-y-5 lg:space-y-2">
-                    <span class="text-white text-3xl lg:text-sm">Author Name</span>
-                    <input id="author_name" name="author_name"
-                        class="text-3xl lg:text-sm px-3 py-2 h-16 lg:h-8 form-input mt-1 block w-full rounded-xl lg:rounded-md bg-color-secundary border-gray-700 text-white"
-                        {%if manga %} value="{{manga.author}}" {% endif %} required autofocus>
-                </label>
-                <label class="mt-6 lg:mt-3 block space-y-5 lg:space-y-2">
-                    <span class="text-white text-3xl lg:text-sm">Cover</span>
-                    <input id="cover" name="cover"
-                        class="text-3xl lg:text-sm px-3 py-2 h-16 lg:h-8 form-input mt-1 block w-full rounded-xl lg:rounded-md bg-color-secundary border-gray-700 text-white"
-                        {%if manga %} value="{{manga.cover}}" {% endif %} required autofocus>
-                </label>
-                <label class="mt-6 lg:mt-3 block mt-6 lg:mt-3 space-y-5 lg:space-y-2">
-                    <span class="text-white text-3xl lg:text-sm">Description</span>
-                    <textarea id="description" name="description" rows="3" autofocus
-                        class="form-textarea resize-none border text-3xl lg:text-sm px-3 py-2 mt-1 block w-full rounded-xl lg:rounded-md bg-color-secundary border-gray-700 text-white">{%if manga %} value="{{manga.description}}" {% endif %}</textarea>
-                </label>
-                {% endif %}
+
                 <div class="mt-12 lg:mt-6">
                     {% if option == 'Delete'%}
                     <button type="submit"

@@ -48,3 +48,23 @@ class Administrator:
             return 'Administrator password is empty'
         else:
             return True
+
+
+class Mangas:
+    def __init__(self, name, description, author, cover, id=None):
+        self.name = name
+        self.description = description
+        self.author = author
+        self.cover = cover
+        self.id = id
+
+class Chapter:
+    def __init__(self, name, manga, id=None):
+        self.name = name
+        self.manga = manga
+        self.id = id
+
+class Images:
+    def __init__(self,url, chapter_id):
+        self.url = url
+        self.chapter_id = chapter_id

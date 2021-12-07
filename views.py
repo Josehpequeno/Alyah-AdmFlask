@@ -3,7 +3,7 @@ from app import app, db
 
 from dao import MangasDao
 
-from models import Administrator
+from models import Administrator, Mangas
 
 
 @app.route('/')  # definição de uma rota
@@ -14,22 +14,93 @@ def home():
     # tem que estar na pasta de templates
 
 
-@app.route('/mangas')
-def mangas():
-    pass
-    # return render_template('mangas.html')
+@app.route('/mangas/<string:option>')
+def mangas(option):
+    return render_template('mangas.html', option=option)
+
+@app.route('/mangasCreate', methods=['POST'])
+def mangasCreate():
+    name = request.form['name']
+    author = request.form['author_name']
+    cover = request.form['cover']
+    description = request.form['description']
+
+    manga = Mangas(name, description, author, cover)
+    
+    flash("Manga Successfully Added")
+    # return render_template('mangas.html', option='Create', error=True)
+    return render_template('mangas.html', option='Create', sucess=True)
+
+@app.route('/mangasUpdate', methods=['POST'])
+def mangasUpdate():
+    name = request.form['name']
+    author = request.form['author_name']
+    cover = request.form['cover']
+    description = request.form['description']
+    
+    manga = Mangas(name, description, author, cover)
+
+    flash("Manga Updated Successfully")
+    # return render_template('mangas.html', option='Create', error=True)
+    return render_template('mangas.html', option='Update', sucess=True)
+
+@app.route('/mangasDelete', methods=['POST'])
+def mangasDelete():
+    name = request.form['name']
+    author = request.form['author_name']
+    cover = request.form['cover']
+    description = request.form['description']
+    
+    manga = Mangas(name, description, author, cover)
+
+    flash("Manga Successfully Deleted")
+    # return render_template('mangas.html', option='Create', error=True)
+    return render_template('mangas.html', option='Delete', sucess=True)
 
 
-@app.route('/manga/<name>')
-def manga(name):
-    pass
-    # return render_template('template.html')
+@app.route('/chapters/<string:option>')
+def chapters(option):
+    return render_template('chapters.html', option=option)
 
+@app.route('/chaptersCreate', methods=['POST'])
+def chaptersCreate():
+    name = request.form['name']
+    author = request.form['author_name']
+    cover = request.form['cover']
+    description = request.form['description']
 
-@app.route('/chapters')
-def chapters():
-    pass
-    # return render_template('template.html')
+    chapters = Mangas(name, description, author, cover)
+    
+    flash("Chapters Successfully Added")
+    # return render_template('mangas.html', option='Create', error=True)
+    return render_template('chapters.html', option='Create', sucess=True)
+
+@app.route('/chaptersUpdate', methods=['POST'])
+def chaptersUpdate():
+    name = request.form['name']
+    author = request.form['author_name']
+    cover = request.form['cover']
+    description = request.form['description']
+    
+    chapters = Mangas(name, description, author, cover)
+
+    flash("Chapters Updated Successfully")
+    # return render_template('mangas.html', option='Create', error=True)
+    return render_template('chapters.html', option='Update', sucess=True)
+
+@app.route('/chaptersDelete', methods=['POST'])
+def chaptersDelete():
+    name = request.form['name']
+    author = request.form['author_name']
+    cover = request.form['cover']
+    description = request.form['description']
+    
+    chapters = Mangas(name, description, author, cover)
+
+    flash("Manga Successfully Deleted")
+    # return render_template('mangas.html', option='Create', error=True)
+    return render_template('chapters.html', option='Delete', sucess=True)
+
 
 
 @app.route('/addUser', methods=['GET', 'POST'])
