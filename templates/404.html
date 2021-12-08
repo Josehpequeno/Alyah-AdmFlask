@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <title>Alyah-Adm</title>
+    <meta charset="utf-8" />
+    <link class="rounded-circle" href="{{ url_for('static', filename='images/favicon.ico') }}" rel="icon" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.min.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/components.min.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/utilities.min.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/index.min.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/error.min.css') }}" />
+</head>
+
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="xs-12 md-6 mx-auto px-auto text-3xl absolute inset-0">
+                <div id="countUp">
+                    <div class="number">404</div>
+                    <div class="text"></div>
+                    <div class="text">Page not found</div>
+                    <div class="text">This may not mean anything.</div>
+                    <div class="text">I'm probably working on something that has blown up.</div>
+                    <div class="text"> Do you want to go back to a safe place? <a href="{{url_for('home')}}">here</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

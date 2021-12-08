@@ -36,5 +36,4 @@ class AuthorDao:
     def getAuthorName(self,id):
         cursor = self.__db.cursor()
         cursor.execute(f"SELECT name FROM authors WHERE id = {id}")
-        # print (cursor.fetchone()[0])
         return cursor.fetchone()[0]
