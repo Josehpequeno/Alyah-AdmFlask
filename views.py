@@ -1,36 +1,38 @@
 from flask import render_template, request, redirect, session, flash, url_for, send_from_directory
 from app import app, db
 from dao import MangasDao, AdministratorDao
-from models import Administrator, Mangas
+from models import Administrator, Mangas, Chapter
 import hashlib
+
+
+def getUserSession():
+    try:
+        return session['USER']
+    except Exception as error:
+        return None
 
 
 @app.route('/')  # definição de uma rota
 def home():
     manga_dao = MangasDao(db)
     mangas = manga_dao.getAllMangas()
-    try:
-        user = session['USER']
-    except Exception as error:
-        user = None
+    user = getUserSession()
     return render_template('home.html', mangas=mangas, user=user)
     # tem que estar na pasta de templates
 
 
 @app.route('/mangas/<string:option>')
 def mangas(option):
-    try:
-        user = session['USER']
-    except Exception as error:
+    user = getUserSession()
+    if user == None:
         return redirect(url_for('login'))
     return render_template('mangas.html', option=option, user=user)
 
 
 @app.route('/mangasCreate', methods=['POST'])
 def mangasCreate():
-    try:
-        user = session['USER']
-    except Exception as error:
+    user = getUserSession()
+    if user == None:
         return redirect(url_for('login'))
     name = request.form['name']
     author = request.form['author_name']
@@ -46,11 +48,11 @@ def mangasCreate():
 
 @app.route('/mangasUpdate', methods=['POST'])
 def mangasUpdate():
-    try:
-        user = session['USER']
-    except Exception as error:
+    user = getUserSession()
+    if user == None:
         return redirect(url_for('login'))
     name = request.form['name']
+    new_name = request.form['new_name']
     author = request.form['author_name']
     cover = request.form['cover']
     description = request.form['description']
@@ -64,16 +66,12 @@ def mangasUpdate():
 
 @app.route('/mangasDelete', methods=['POST'])
 def mangasDelete():
-    try:
-        user = session['USER']
-    except Exception as error:
+    user = getUserSession()
+    if user == None:
         return redirect(url_for('login'))
     name = request.form['name']
-    author = request.form['author_name']
-    cover = request.form['cover']
-    description = request.form['description']
 
-    manga = Mangas(name, description, author, cover)
+    # manga = Mangas(name, description, author, cover)
 
     flash("Manga Successfully Deleted")
     # return render_template('mangas.html', option='Create', error=True)
@@ -82,25 +80,22 @@ def mangasDelete():
 
 @app.route('/chapters/<string:option>')
 def chapters(option):
-    try:
-        user = session['USER']
-    except Exception as error:
+    user = getUserSession()
+    if user == None:
         return redirect(url_for('login'))
     return render_template('chapters.html', option=option, user=user)
 
 
 @app.route('/chaptersCreate', methods=['POST'])
 def chaptersCreate():
-    try:
-        user = session['USER']
-    except Exception as error:
+    user = getUserSession()
+    if user == None:
         return redirect(url_for('login'))
     name = request.form['name']
-    author = request.form['author_name']
-    cover = request.form['cover']
-    description = request.form['description']
+    manga = request.form['manga']
+    urls = request.form['urls']
 
-    chapters = Mangas(name, description, author, cover)
+    chapters = Chapter(name, manga)
 
     flash("Chapters Successfully Added")
     # return render_template('mangas.html', option='Create', error=True)
@@ -109,16 +104,15 @@ def chaptersCreate():
 
 @app.route('/chaptersUpdate', methods=['POST'])
 def chaptersUpdate():
-    try:
-        user = session['USER']
-    except Exception as error:
+    user = getUserSession()
+    if user == None:
         return redirect(url_for('login'))
     name = request.form['name']
-    author = request.form['author_name']
-    cover = request.form['cover']
-    description = request.form['description']
+    new_name = request.form['new_name']
+    manga = request.form['manga']
+    urls = request.form['urls']
 
-    chapters = Mangas(name, description, author, cover)
+    chapters = Chapter(name, manga)
 
     flash("Chapters Updated Successfully")
     # return render_template('mangas.html', option='Create', error=True)
@@ -127,16 +121,10 @@ def chaptersUpdate():
 
 @app.route('/chaptersDelete', methods=['POST'])
 def chaptersDelete():
-    try:
-        user = session['USER']
-    except Exception as error:
+    user = getUserSession()
+    if user == None:
         return redirect(url_for('login'))
     name = request.form['name']
-    author = request.form['author_name']
-    cover = request.form['cover']
-    description = request.form['description']
-
-    chapters = Mangas(name, description, author, cover)
 
     flash("Manga Successfully Deleted")
     # return render_template('mangas.html', option='Create', error=True)
@@ -145,12 +133,12 @@ def chaptersDelete():
 
 @app.route('/addUser', methods=['GET', 'POST'])
 def addUser():
+    user = getUserSession()
     if request.method == 'GET':
-        try:
-            user = session['USER']
-            return render_template('addUser.html', user=user)
-        except Exception as error:
+        if user == None:
             return redirect(url_for('login'))
+        else:
+            return render_template('addUser.html', user=user)
     else:
         name = request.form['name']
         email = request.form['email']
@@ -160,12 +148,78 @@ def addUser():
         check = Administrator.checkAdm(adm, name, email, password)
         if check != True:
             flash(check)
-            return render_template('addUser.html', adm=adm, error=True)
+            return render_template('addUser.html', user=user, adm=adm, error=True)
         if confirm_password != password:
             flash('Passwords do not match')
-            return render_template('addUser.html', adm=adm, error=True)
-        flash('Administrator added successfully')
-        return render_template('addUser.html', adm=adm, sucess=True)
+            return render_template('addUser.html', user=user, adm=adm, error=True)
+        administratorDao = AdministratorDao(db)
+        if administratorDao.checkEmail(adm.email):
+            if administratorDao.checkName(adm.name):
+                result = administratorDao.add(adm)
+                if result:
+                    flash('Administrator Added Successfully')
+                    return render_template('addUser.html', user=user, adm=adm, sucess=True)
+                else: 
+                    print(result)
+                    flash('Administrator Not Added')
+                    return render_template('addUser.html', user=user, adm=adm, error=True)
+            else:
+                flash('Name Already In Use')
+                return render_template('addUser.html', user=user, adm=adm, error=True)
+        else:
+            flash('Email Already In Use')
+            return render_template('addUser.html', user=user, adm=adm, error=True)    
+
+@app.route('/profile', methods=['GET', 'POST'])
+def profile():
+    userId = getUserSession()
+    if request.method == 'GET':
+        if userId == None:
+            return redirect(url_for('login'))
+        else:
+            adm = AdministratorDao(db)
+            adm_user = adm.getAdminById(userId)
+            return render_template('profile.html', user=userId, adm=adm_user)
+    else:
+        admDao = AdministratorDao(db)
+        adm_user = admDao.getAdminById(userId)
+        name = request.form['name']
+        email = request.form['email']
+        current_password = request.form['current_password']
+        password_hash = hashlib.sha256(
+            str(current_password).encode('utf-8')).hexdigest()
+        password = request.form['password']
+        confirm_password = request.form['confirm-password']
+        user = Administrator(name, email, None)
+        if adm_user != None and adm_user.password == password_hash:
+            adm = Administrator(name, email, password)
+            check = Administrator.checkAdm(adm, name, email, password)
+            if check != True:
+                flash(check)
+                return render_template('profile.html', user=user, adm=adm, error=True)
+            if confirm_password != password:
+                flash('Passwords do not match')
+                return render_template('profile.html', user=user, adm=adm, error=True)
+            administratorDao = AdministratorDao(db)
+            if administratorDao.checkEmail(adm.email):
+                if administratorDao.checkName(adm.name):
+                    result = administratorDao.update(adm)
+                    if result:
+                        flash('Administrator Updated Successfully')
+                        return render_template('profile.html', user=user, adm=adm, sucess=True)
+                    else: 
+                        print(result)
+                        flash('Administrator Not Updated')
+                        return render_template('profile.html', user=user, adm=adm, error=True)
+                else:
+                    flash('Name Already In Use')
+                    return render_template('profile.html', user=user, adm=adm, error=True)
+            else:
+                flash('Email Already In Use')
+                return render_template('profile.html', user=user, adm=adm, error=True) 
+        else:
+            flash("Incorrect Password")
+            return render_template('profile.html', user=user)  
 
 
 @app.route('/login', methods=['GET', 'POST'])

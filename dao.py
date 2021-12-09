@@ -44,6 +44,22 @@ class AuthorDao:
 class AdministratorDao:
     def __init__(self, db):
         self.__db = db
+    def checkEmail(self, email):
+        cursor = self.__db.cursor()
+        cursor.execute("SELECT * FROM admin_user WHERE email = %s", [email])
+        results = cursor.fetchall()
+        if results != []:
+            return False
+        else:
+            return True
+    def checkName(self, name):
+        cursor = self.__db.cursor()
+        cursor.execute("SELECT * FROM admin_user WHERE name = %s", [name])
+        results = cursor.fetchall()
+        if results != []:
+            return False
+        else:
+            return True
     def getAdmin(self, username):
         cursor = self.__db.cursor()
         cursor.execute("SELECT * FROM admin_user WHERE email = %s", [username])
@@ -68,3 +84,49 @@ class AdministratorDao:
                 return adm
             else:
                 return None
+    def getAdminById(self, id):
+        cursor = self.__db.cursor()
+        cursor.execute("SELECT * FROM admin_user WHERE id = %s", [id])
+        results = cursor.fetchall()
+        if results != []:
+            id = results[0][0]
+            name = results[0][1]
+            email = results[0][2]
+            password = results[0][3]
+            adm = Administrator(name, email, password, password, id)
+            return adm
+        else:
+            return None
+    def add(self, adm):
+        try:
+            cursor = self.__db.cursor()
+            cursor.execute("INSERT INTO admin_user (name, email, password) VALUES (%s,%s,%s)", [
+                adm.name, adm.email, adm.password])
+            self.__db.commit()
+            cursor.execute("SELECT * FROM admin_user")
+            records = cursor.fetchall()
+            print("Select data is: ")
+            for record in records:
+                print(record)
+            print()
+            self.__db.commit()
+            return True
+        except Exception as error:
+            return error
+    def update(self, adm):
+        pass
+        # try:
+        #     cursor = self.__db.cursor()
+        #     cursor.execute("INSERT INTO admin_user (name, email, password) VALUES (%s,%s,%s)", [
+        #         adm.name, adm.email, adm.password])
+        #     self.__db.commit()
+        #     cursor.execute("SELECT * FROM admin_user")
+        #     records = cursor.fetchall()
+        #     print("Select data is: ")
+        #     for record in records:
+        #         print(record)
+        #     print()
+        #     self.__db.commit()
+        #     return True
+        # except Exception as error:
+        #     return error

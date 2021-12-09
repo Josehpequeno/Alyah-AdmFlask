@@ -43,7 +43,7 @@
             <br />
             <h3 class="text-white text-5xl lg:text-xl self-center text-center py-12 lg:py-2 w-full mr-64 lg:mr-40">
                 Add Administrator User</h3>
-            <form class="mt-4" method="POST" action="{{url_for('addUser')}}">
+            <form class="mt-4" method="POST" action="{{url_for('profile')}}">
                 <label class="block mt-3 space-y-5 lg:space-y-2 py-2">
                     <span class="text-white text-3xl lg:text-sm">Name</span>
                     <input id="name"
@@ -57,12 +57,24 @@
                         {% if adm %} value="{{adm.email}}" {% endif %} required autocomplete="email" autofocus>
                 </label>
                 <label class="block mt-6 lg:mt-3 space-y-5 lg:space-y-2">
-                    <span class="text-white text-3xl lg:text-sm">Password</span>
+                    <span class="text-white text-3xl lg:text-sm">Current Password</span>
+                    <input id="current_password" type="password"
+                        class="text-3xl lg:text-sm px-3 py-2 h-16 lg:h-8 form-input mt-1 block w-96 rounded-xl lg:rounded-md bg-color-secundary border-gray-700 text-white"
+                        name="current_password" required autocomplete="password">
+                </label>
+                <div class="mt-6 lg:mt-3 inset-0 text-center">
+                    <a id="change" onclick="change()"
+                        class="h-16 lg:h-8 inline-flex text-2xl lg:text-sm rounded text-white ml-4 py-1 px-3 rounded-lg hover:border-transparent hover:bg-white button">
+                        <span>Change Password</span>
+                    </a>
+                </div>
+                <label id="password_label" class="hidden-element block mt-6 lg:mt-3 space-y-5 lg:space-y-2">
+                    <span class="text-white text-3xl lg:text-sm">New Password</span>
                     <input id="password" type="password"
                         class="text-3xl lg:text-sm px-3 py-2 h-16 lg:h-8 form-input mt-1 block w-96 rounded-xl lg:rounded-md bg-color-secundary border-gray-700 text-white"
                         name="password" required autocomplete="password">
                 </label>
-                <label class="block mt-6 lg:mt-3 space-y-5 lg:space-y-2">
+                <label id="confirm-password_label" class="hidden-element block mt-6 lg:mt-3 space-y-5 lg:space-y-2">
                     <span class="text-white text-3xl lg:text-sm">Confirm Password</span>
                     <input id="confirm-password" type="password"
                         class="text-3xl lg:text-sm px-3 py-2 h-16 lg:h-8 form-input mt-1 block w-96 rounded-xl lg:rounded-md bg-color-secundary border-gray-700 text-white"
@@ -110,5 +122,16 @@
         $("#password").keyup(checkPasswordMatch);
         $("#confirm-password").keyup(checkPasswordMatch);
     });
+</script>
+<script>
+    function change() {
+        if ($("#password_label").hasClass("hidden-element")) {
+            $("#password_label").removeClass("hidden-element")
+            $("#confirm-password_label").removeClass("hidden-element")
+        } else {
+            $("#password_label").addClass("hidden-element")
+            $("#confirm-password_label").addClass("hidden-element")
+        }
+    }
 </script>
 {% endblock %}
