@@ -30,14 +30,14 @@ class Author:
 
 
 class Administrator:
-    def __init__(self, name, email, password):
-        print(name, email, password)
+    def __init__(self,name, email, password, password_hash=None, id=None):
         self.name = name
         self.email = email
-        password_hash = hashlib.sha256(
-            str(password).encode('utf-8')).hexdigest()
-        print(password_hash)
-        self.password = hash
+        if password_hash == None:
+            password_hash = hashlib.sha256(
+                str(password).encode('utf-8')).hexdigest()
+        self.password = password_hash
+        self.id = id
 
     def checkAdm(self, name, email, password):
         if len(name) < 3:
