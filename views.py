@@ -14,8 +14,8 @@ def getUserSession():
 
 @app.route('/')  # definição de uma rota
 def home():
-    manga_dao = MangasDao(db)
-    mangas = manga_dao.getAllMangas()
+    mangas_dao = MangasDao(db)
+    mangas = mangas_dao.getAllMangas()
     user = getUserSession()
     return render_template('home.html', mangas=mangas, user=user)
     # tem que estar na pasta de templates
@@ -26,7 +26,9 @@ def mangas(option):
     user = getUserSession()
     if user == None:
         return redirect(url_for('login'))
-    return render_template('mangas.html', option=option, user=user)
+    mangas_dao = MangasDao(db)
+    mangas = mangas_dao.getAllMangas()
+    return render_template('mangas.html', option=option, user=user, mangas=mangas)
 
 
 @app.route('/mangasCreate', methods=['POST'])
@@ -159,8 +161,8 @@ def addUser():
                 if result:
                     flash('Administrator Added Successfully')
                     return render_template('addUser.html', user=user, adm=adm, sucess=True)
-                else: 
-                    print(result)
+                else:
+                    print("Error: " + result)
                     flash('Administrator Not Added')
                     return render_template('addUser.html', user=user, adm=adm, error=True)
             else:
@@ -168,7 +170,8 @@ def addUser():
                 return render_template('addUser.html', user=user, adm=adm, error=True)
         else:
             flash('Email Already In Use')
-            return render_template('addUser.html', user=user, adm=adm, error=True)    
+            return render_template('addUser.html', user=user, adm=adm, error=True)
+
 
 @app.route('/profile', methods=['GET', 'POST'])
 def profile():
@@ -190,36 +193,37 @@ def profile():
             str(current_password).encode('utf-8')).hexdigest()
         password = request.form['password']
         confirm_password = request.form['confirm-password']
-        user = Administrator(name, email, None)
+        adm = Administrator(name, email, current_password)
         if adm_user != None and adm_user.password == password_hash:
-            adm = Administrator(name, email, password)
-            check = Administrator.checkAdm(adm, name, email, password)
+            check = Administrator.checkAdm(adm, name, email, current_password)
             if check != True:
                 flash(check)
-                return render_template('profile.html', user=user, adm=adm, error=True)
+                return render_template('profile.html', user=userId, adm=adm, error=True)
             if confirm_password != password:
                 flash('Passwords do not match')
-                return render_template('profile.html', user=user, adm=adm, error=True)
+                return render_template('profile.html', user=userId, adm=adm, error=True)
+            if password != "":
+                adm = Administrator(name, email, password)
             administratorDao = AdministratorDao(db)
-            if administratorDao.checkEmail(adm.email):
-                if administratorDao.checkName(adm.name):
-                    result = administratorDao.update(adm)
+            if email == adm_user.email or administratorDao.checkEmail(adm.email):
+                if name == adm_user.name or administratorDao.checkName(adm.name):
+                    result = administratorDao.update(adm, userId)
                     if result:
                         flash('Administrator Updated Successfully')
-                        return render_template('profile.html', user=user, adm=adm, sucess=True)
-                    else: 
-                        print(result)
+                        return render_template('profile.html', user=userId, adm=adm, sucess=True)
+                    else:
+                        print("Error: " + result)
                         flash('Administrator Not Updated')
-                        return render_template('profile.html', user=user, adm=adm, error=True)
+                        return render_template('profile.html', user=userId, adm=adm, error=True)
                 else:
                     flash('Name Already In Use')
-                    return render_template('profile.html', user=user, adm=adm, error=True)
+                    return render_template('profile.html', user=userId, adm=adm, error=True)
             else:
                 flash('Email Already In Use')
-                return render_template('profile.html', user=user, adm=adm, error=True) 
+                return render_template('profile.html', user=userId, adm=adm, error=True)
         else:
             flash("Incorrect Password")
-            return render_template('profile.html', user=user)  
+            return render_template('profile.html', user=userId, adm=adm, error=True)
 
 
 @app.route('/login', methods=['GET', 'POST'])

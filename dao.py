@@ -44,6 +44,7 @@ class AuthorDao:
 class AdministratorDao:
     def __init__(self, db):
         self.__db = db
+
     def checkEmail(self, email):
         cursor = self.__db.cursor()
         cursor.execute("SELECT * FROM admin_user WHERE email = %s", [email])
@@ -52,6 +53,7 @@ class AdministratorDao:
             return False
         else:
             return True
+
     def checkName(self, name):
         cursor = self.__db.cursor()
         cursor.execute("SELECT * FROM admin_user WHERE name = %s", [name])
@@ -60,6 +62,7 @@ class AdministratorDao:
             return False
         else:
             return True
+
     def getAdmin(self, username):
         cursor = self.__db.cursor()
         cursor.execute("SELECT * FROM admin_user WHERE email = %s", [username])
@@ -84,6 +87,7 @@ class AdministratorDao:
                 return adm
             else:
                 return None
+
     def getAdminById(self, id):
         cursor = self.__db.cursor()
         cursor.execute("SELECT * FROM admin_user WHERE id = %s", [id])
@@ -97,6 +101,7 @@ class AdministratorDao:
             return adm
         else:
             return None
+
     def add(self, adm):
         try:
             cursor = self.__db.cursor()
@@ -113,20 +118,20 @@ class AdministratorDao:
             return True
         except Exception as error:
             return error
-    def update(self, adm):
-        pass
-        # try:
-        #     cursor = self.__db.cursor()
-        #     cursor.execute("INSERT INTO admin_user (name, email, password) VALUES (%s,%s,%s)", [
-        #         adm.name, adm.email, adm.password])
-        #     self.__db.commit()
-        #     cursor.execute("SELECT * FROM admin_user")
-        #     records = cursor.fetchall()
-        #     print("Select data is: ")
-        #     for record in records:
-        #         print(record)
-        #     print()
-        #     self.__db.commit()
-        #     return True
-        # except Exception as error:
-        #     return error
+
+    def update(self, adm, id):
+        try:
+            cursor = self.__db.cursor()
+            cursor.execute("UPDATE admin_user SET name = %s, email = %s, password = %s WHERE id = %s", [
+                adm.name, adm.email, adm.password, id])
+            self.__db.commit()
+            cursor.execute("SELECT * FROM admin_user")
+            records = cursor.fetchall()
+            print("Select data is: ")
+            for record in records:
+                print(record)
+            print()
+            self.__db.commit()
+            return True
+        except Exception as error:
+            return error

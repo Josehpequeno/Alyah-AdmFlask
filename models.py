@@ -30,7 +30,7 @@ class Author:
 
 
 class Administrator:
-    def __init__(self,name, email, password, password_hash=None, id=None):
+    def __init__(self, name, email, password, password_hash=None, id=None):
         self.name = name
         self.email = email
         if password_hash == None:
@@ -57,6 +57,9 @@ class Mangas:
         self.author = author
         self.cover = cover
         self.id = id
+        str = f'"name": "{name}","description": "{description}","author": "{author}","cover": "{cover}"'
+        self.str = "{"+str+"}"
+
 
 class Chapter:
     def __init__(self, name, manga, id=None):
@@ -64,7 +67,8 @@ class Chapter:
         self.manga = manga
         self.id = id
 
+
 class Images:
-    def __init__(self,url, chapter_id):
+    def __init__(self, url, chapter_id):
         self.url = url
         self.chapter_id = chapter_id
