@@ -64,6 +64,23 @@
                             </div>
                         </div>
                     </div>
+                    <div class="mr-16 lg:mr-5">
+                        <span class="rounded-md shadow-sm"><button id="manage_authors"
+                                class="bg-color-secundary-dark inline-flex justify-center w-full px-4 py-2 text-sm font-medium leading-5 text-white ease-in-out hover:bg-white border border-gray-300 rounded-md hover:text-black focus:outline-none focus:outline-none active:bg-white active:text-black"
+                                type="button" aria-haspopup="true" aria-expanded="true"
+                                aria-controls="headlessui-menu-items-117">
+                                <span>Manage Authors</span>
+                            </button></span>
+                        <div id="menu_authors" class="invisible dropdown-menu transform">
+                            <div class="absolute w-full mt-2 origin-top-right bg-white border border-gray-200 divide-y divide-gray-100 rounded-md shadow-lg outline-none"
+                                aria-labelledby="headlessui-menu-button-1" id="headlessui-menu-items-117" role="menu">
+                                <div class="py-1"><a href="{{url_for('authors', option='Delete')}}" tabindex="1"
+                                        class="text-gray-700 flex justify-between w-full px-4 py-2 text-3xl lg:text-sm leading-5 text-left"
+                                        role="menuitem">Delete</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </nav>
                 <a href="{{url_for('home')}}"
                     class="flex order-first lg:order-none lg:w-1/5 title-font font-medium items-center lg:items-center lg:justify-center mb-4 md:mb-0">
@@ -233,6 +250,22 @@
             } else {
                 $("#menu_chapters").addClass('invisible');
                 $("#menu_chapters").removeClass('invisible')
+            }
+        });
+    </script>
+    <script>
+        // Grab HTML Elements
+        const btn_authors = document.querySelector("button#manage_authors");
+        const menu_authors = document.querySelector("#menu_authors");
+        // Add Event Lauthors
+        btn_authors.addEventListener("click", () => {
+            menu_authors.classList.toggle('invisible');
+            if ($("#menu_authors").hasClass("invisible")) {
+                $("#menu_authors").removeClass('invisible');
+                $("#menu_authors").addClass('invisible')
+            } else {
+                $("#menu_authors").addClass('invisible');
+                $("#menu_authors").removeClass('invisible')
             }
         });
     </script>

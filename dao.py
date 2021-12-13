@@ -30,15 +30,116 @@ class MangasDao:
             results.append(manga)
         return results
 
+    def create_manga(self, manga):
+        try:
+            authorDao = AuthorDao(self.__db)
+            author_id = authorDao.getAuthorId(manga.author)
+            # if author_id == False:
+            #     raise Exception("ERROR in the database")
+            # else:
+            if author_id == None:
+                authorDao.create_author(manga.author)
+                author_id = authorDao.getAuthorId(manga.author)
+            print("here: " + str(author_id))
+            cursor = self.__db.cursor()
+            cursor.execute("INSERT INTO mangas (name, description, author_id, cover) VALUES (%s,%s,%s,%s)", [
+                manga.name, manga.description, author_id, manga.cover])
+            self.__db.commit()
+            cursor.execute("SELECT * FROM mangas")
+            records = cursor.fetchall()
+            print("Select data is: ")
+            for record in records:
+                print(record)
+            print()
+            self.__db.commit()
+            return True
+        except Exception as error:
+            return error
+    def delete(self, id):
+        cursor = self.__db.cursor()
+        cursor.execute("DELETE FROM mangas WHERE id = %s", [id])
+        self.__db.commit()
+        cursor.execute("SELECT * FROM mangas")
+        records = cursor.fetchall()
+        print("Select data is: ")
+        for record in records:
+            print(record)
+        print()
+        self.__db.commit()
 
 class AuthorDao:
     def __init__(self, db):
         self.__db = db
 
-    def getAuthorName(self, id):
+    def getAllAuthors(self):
         cursor = self.__db.cursor()
-        cursor.execute(f"SELECT name FROM authors WHERE id = {id}")
-        return cursor.fetchone()[0]
+        cursor.execute("SELECT * FROM authors")
+        # records = cursor.fetchall()
+        results = []
+        for row in cursor:
+            id = row[0]
+            name = row[1]
+            # favorites_count = row[5]
+            author = Author(name, id)
+            # j = {
+            #     "name": name,
+            #     "description": description,
+            #     "author": author,
+            #     "cover": cover
+            # }
+            # y = json.dumps(j)
+            results.append(author)
+        return results
+
+    def getAuthorName(self, id):
+        try:
+            cursor = self.__db.cursor()
+            cursor.execute(f"SELECT name FROM authors WHERE id = {id}")
+            return cursor.fetchone()[0]
+        except Exception as error:
+            cursor = self.__db.cursor()
+            cursor.execute("ROLLBACK")
+            self.__db.commit()
+            return error
+
+    def getAuthorId(self, name):
+        try:
+            cursor = self.__db.cursor()
+            cursor.execute("SELECT id FROM authors WHERE name = %s", [name])
+            results = cursor.fetchone()
+            if type(results) != type(()):
+                return None
+            else:
+                return results[0]
+        except Exception as error:
+            cursor = self.__db.cursor()
+            cursor.execute("ROLLBACK")
+            self.__db.commit()
+            return error
+
+    def create_author(self, name):
+        cursor = self.__db.cursor()
+        cursor.execute("INSERT INTO authors (name) VALUES (%s)", [name])
+        self.__db.commit()
+        cursor.execute("SELECT * FROM authors")
+        records = cursor.fetchall()
+        print("Select data is: ")
+        for record in records:
+            print(record)
+        print()
+        self.__db.commit()
+    def delete(self, id):
+        cursor = self.__db.cursor()
+        cursor.execute("DELETE FROM authors WHERE id = %s", [id])
+        self.__db.commit()
+        cursor.execute("SELECT * FROM authors")
+        records = cursor.fetchall()
+        print("Select data is: ")
+        for record in records:
+            print(record)
+        print()
+        self.__db.commit()
+
 
 
 class AdministratorDao:

@@ -1,0 +1,63 @@
+{% extends "template.html" %}
+{% block conteudo %}
+<main>
+    <div class="flex items-center justify-center mx-6 lg:inset-x-0 lg:top-40">
+        <div
+            class="my-24 p-10 bg-color-secundary-dark shadow rounded-3xl lg:rounded-md h-full w-full lg:w-auto py-28 lg:p-6">
+            {% with messages = get_flashed_messages() %}
+            {% if messages and error %}
+            {% for message in messages %}
+            <div class="text-center pt-0 lg:px-4">
+                <div class="w-80 p-2 bg-color-danger items-center color-danger leading-none lg:rounded-full flex lg:inline-flex"
+                    role="alert">
+                    <span
+                        class="flex rounded-full bg-color-light-light uppercase px-2 py-1 text-xs font-bold mr-3">New</span>
+                    <span class="font-semibold mr-2 text-left flex-auto color-light-light">{{ message }}</span>
+                    <svg class="color-light-light fill-current opacity-75 h-4 w-4" xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 20 20">
+                        <path
+                            d="M12.95 10.707l.707-.707L8 4.343 6.586 5.757 10.828 10l-4.242 4.243L8 15.657l4.95-4.95z" />
+                    </svg>
+                </div>
+            </div>
+            {% endfor %}
+            {% endif %}
+            {% if messages and sucess%}
+            {% for message in messages %}
+            <div class="text-center pt-0 lg:px-4">
+                <div class="w-80 p-2 bg-color-sucess items-center color-sucess leading-none lg:rounded-full flex lg:inline-flex"
+                    role="alert">
+                    <span
+                        class="flex rounded-full bg-color-light-light uppercase px-2 py-1 text-xs font-bold mr-3">New</span>
+                    <span class="font-semibold mr-2 text-left flex-auto color-light-light">{{ message }}</span>
+                    <svg class="color-light-light fill-current opacity-75 h-4 w-4" xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 20 20">
+                        <path
+                            d="M12.95 10.707l.707-.707L8 4.343 6.586 5.757 10.828 10l-4.242 4.243L8 15.657l4.95-4.95z" />
+                    </svg>
+                </div>
+            </div>
+            {% endfor %}
+            {% endif %}
+            {% endwith %}
+            <br />
+            <h3 class="text-white text-5xl lg:text-xl self-center text-center py-12 lg:py-2 w-full mr-64 lg:mr-40">
+                Delete Authors</h3>
+            <form class="mt-4" method="POST" action="{{url_for('authors', option='Delete')}}">
+                <select name="name" class="text-white w-96 rounded-xl lg:rounded-md bg-color-secundary h-16 lg:h-8">
+                    <option value="-1">Select a Author</option>
+                    {%for author in authors%}
+                    <option value="{{author.id}}">{{author.name}}</option>
+                    {%endfor %}
+                </select>
+                <div class="mt-12 lg:mt-6">
+                    <button type="submit"
+                        class="w-full py-6 lg:py-2 px-4 text-center bg-color-danger rounded-xl lg:rounded-md text-white text-3xl lg:text-sm hover:bg-blue-500 focus:outline-none">
+                        Delete
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</main>
+{% endblock %}

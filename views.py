@@ -1,6 +1,6 @@
 from flask import render_template, request, redirect, session, flash, url_for, send_from_directory
 from app import app, db
-from dao import MangasDao, AdministratorDao
+from dao import MangasDao, AdministratorDao, AuthorDao
 from models import Administrator, Mangas, Chapter
 import hashlib
 
@@ -19,6 +19,26 @@ def home():
     user = getUserSession()
     return render_template('home.html', mangas=mangas, user=user)
     # tem que estar na pasta de templates
+
+
+@app.route('/authors/<string:option>', methods=['GET', 'POST'])
+def authors(option):
+    user = getUserSession()
+    if request.method == 'GET':
+        if user == None:
+            return redirect(url_for('login'))
+        author_dao = AuthorDao(db)
+        authors = author_dao.getAllAuthors()
+        return render_template('authors.html', option=option, user=user, authors=authors)
+    else:
+        id = request.form['name']
+        author_dao = AuthorDao(db)
+        if id == -1:
+            flash('Choose A Valid Option')
+            return render_template('authors.html', option=option, user=user, authors=authors, error=True)
+        author_dao.delete(id)
+        authors = author_dao.getAllAuthors()
+        return render_template('authors.html', option=option, user=user, authors=authors, sucess=True)
 
 
 @app.route('/mangas/<string:option>')
@@ -40,12 +60,18 @@ def mangasCreate():
     author = request.form['author_name']
     cover = request.form['cover']
     description = request.form['description']
-
+    
     manga = Mangas(name, description, author, cover)
-
-    flash("Manga Successfully Added")
-    # return render_template('mangas.html', option='Create', error=True)
-    return render_template('mangas.html', option='Create', sucess=True, user=user)
+    mangaDao = MangasDao(db)
+    create = mangaDao.create_manga(manga)
+    mangas_dao = MangasDao(db)
+    mangas = mangas_dao.getAllMangas()
+    if create == True:
+        flash("Manga Successfully Added")
+        return render_template('mangas.html', option='Create', sucess=True, user=user,mangas=mangas)
+    else:
+        flash("Failed To Add Manga")
+        return render_template('mangas.html', option='Create', error=True, user=user, mangas=mangas)
 
 
 @app.route('/mangasUpdate', methods=['POST'])
@@ -71,8 +97,8 @@ def mangasDelete():
     user = getUserSession()
     if user == None:
         return redirect(url_for('login'))
-    name = request.form['name']
-
+    manga_str = request.form['name']
+    print(manga_str)
     # manga = Mangas(name, description, author, cover)
 
     flash("Manga Successfully Deleted")
