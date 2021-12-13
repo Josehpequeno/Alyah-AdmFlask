@@ -14,15 +14,6 @@ def isEmail(email):
         return False
 
 
-class Mangas:
-    def __init__(self, name, description, author, cover, id=None):
-        self.name = name
-        self.description = description
-        self.author = author
-        self.cover = cover
-        self.id = id
-
-
 class Author:
     def __init__(self, name, id=None):
         self.name = name
@@ -57,7 +48,7 @@ class Mangas:
         self.author = author
         self.cover = cover
         self.id = id
-        str = f'"name": "{name}","description": "{description}","author": "{author}","cover": "{cover}"'
+        str = f'"id": "{id}", "name": "{name}","description": "{description}","author": "{author}","cover": "{cover}"'
         self.str = "{"+str+"}"
 
 

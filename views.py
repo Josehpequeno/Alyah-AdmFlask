@@ -33,8 +33,9 @@ def authors(option):
     else:
         id = request.form['name']
         author_dao = AuthorDao(db)
-        if id == -1:
+        if id == "-1":
             flash('Choose A Valid Option')
+            authors = author_dao.getAllAuthors()
             return render_template('authors.html', option=option, user=user, authors=authors, error=True)
         author_dao.delete(id)
         authors = author_dao.getAllAuthors()
@@ -60,15 +61,17 @@ def mangasCreate():
     author = request.form['author_name']
     cover = request.form['cover']
     description = request.form['description']
-    
+
     manga = Mangas(name, description, author, cover)
-    mangaDao = MangasDao(db)
-    create = mangaDao.create_manga(manga)
-    mangas_dao = MangasDao(db)
-    mangas = mangas_dao.getAllMangas()
+    mangasDao = MangasDao(db)
+    create = mangasDao.create(manga)
+    mangas = mangasDao.getAllMangas()
     if create == True:
         flash("Manga Successfully Added")
-        return render_template('mangas.html', option='Create', sucess=True, user=user,mangas=mangas)
+        return render_template('mangas.html', option='Create', sucess=True, user=user, mangas=mangas)
+    elif create == False:
+        flash("Manga Name Already In Use")
+        return render_template('mangas.html', option='Create', error=True, user=user, mangas=mangas)
     else:
         flash("Failed To Add Manga")
         return render_template('mangas.html', option='Create', error=True, user=user, mangas=mangas)
@@ -79,17 +82,31 @@ def mangasUpdate():
     user = getUserSession()
     if user == None:
         return redirect(url_for('login'))
-    name = request.form['name']
+    name = request.form['current_name']
     new_name = request.form['new_name']
     author = request.form['author_name']
     cover = request.form['cover']
     description = request.form['description']
+    id = request.form['id']
 
-    manga = Mangas(name, description, author, cover)
+    manga = Mangas(new_name, description, author, cover, id)
+    mangasDao = MangasDao(db)
+    mangas = mangasDao.getAllMangas()
+    if name != new_name:
+        check = mangasDao.checkName(new_name)
+        if check == False:
+            flash("Manga Name Already In Use")
+            return render_template('mangas.html', option='Update', error=True, user=user, mangas=mangas)
 
-    flash("Manga Updated Successfully")
-    # return render_template('mangas.html', option='Create', error=True)
-    return render_template('mangas.html', option='Update', sucess=True, user=user)
+    update = mangasDao.update(manga)
+    mangas = mangasDao.getAllMangas()
+    if update == True:
+        flash("Manga Updated Successfully")
+        return render_template('mangas.html', option='Update', sucess=True, user=user, mangas=mangas)
+    else:
+        print(update)
+        flash("Failed To Update Manga")
+        return render_template('mangas.html', option='Update', error=True, user=user, mangas=mangas)
 
 
 @app.route('/mangasDelete', methods=['POST'])
@@ -97,13 +114,17 @@ def mangasDelete():
     user = getUserSession()
     if user == None:
         return redirect(url_for('login'))
-    manga_str = request.form['name']
-    print(manga_str)
+    id = request.form['name']
     # manga = Mangas(name, description, author, cover)
-
+    mangasDao = MangasDao(db)
+    mangas = mangasDao.getAllMangas()
+    if id == "-1":
+        flash('Choose A Valid Option')
+        return render_template('mangas.html', option='Delete', error=True, user=user, mangas=mangas)
+    mangasDao.delete(id)
     flash("Manga Successfully Deleted")
-    # return render_template('mangas.html', option='Create', error=True)
-    return render_template('mangas.html', option='Delete', sucess=True, user=user)
+    mangas = mangasDao.getAllMangas()
+    return render_template('mangas.html', option='Delete', sucess=True, user=user, mangas=mangas)
 
 
 @app.route('/chapters/<string:option>')

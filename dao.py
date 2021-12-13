@@ -5,6 +5,14 @@ class MangasDao:
     def __init__(self, db):
         self.__db = db
 
+    def checkName(self, name):
+        cursor = self.__db.cursor()
+        cursor.execute("SELECT * FROM mangas")
+        for row in cursor:
+            if name == row[1]:
+                return False
+        return True
+
     def getAllMangas(self):
         cursor = self.__db.cursor()
         cursor.execute("SELECT * FROM mangas")
@@ -30,7 +38,7 @@ class MangasDao:
             results.append(manga)
         return results
 
-    def create_manga(self, manga):
+    def create(self, manga):
         try:
             authorDao = AuthorDao(self.__db)
             author_id = authorDao.getAuthorId(manga.author)
@@ -40,7 +48,9 @@ class MangasDao:
             if author_id == None:
                 authorDao.create_author(manga.author)
                 author_id = authorDao.getAuthorId(manga.author)
-            print("here: " + str(author_id))
+            # print("here: " + str(author_id))
+            if self.checkName(manga.name) == False:
+                return False
             cursor = self.__db.cursor()
             cursor.execute("INSERT INTO mangas (name, description, author_id, cover) VALUES (%s,%s,%s,%s)", [
                 manga.name, manga.description, author_id, manga.cover])
@@ -55,17 +65,38 @@ class MangasDao:
             return True
         except Exception as error:
             return error
+
     def delete(self, id):
-        cursor = self.__db.cursor()
-        cursor.execute("DELETE FROM mangas WHERE id = %s", [id])
-        self.__db.commit()
-        cursor.execute("SELECT * FROM mangas")
-        records = cursor.fetchall()
-        print("Select data is: ")
-        for record in records:
-            print(record)
-        print()
-        self.__db.commit()
+        try:
+            cursor = self.__db.cursor()
+            cursor.execute("DELETE FROM mangas WHERE id = %s", [id])
+            self.__db.commit()
+            cursor.execute("SELECT * FROM mangas")
+            records = cursor.fetchall()
+            print("Select data is: ")
+            for record in records:
+                print(record)
+            print()
+            self.__db.commit()
+            return True
+        except Exception as error:
+            return error
+
+    def update(self, manga):
+        try:
+            authorDao = AuthorDao(self.__db)
+            author_id = authorDao.getAuthorId(manga.author)
+            if author_id == None:
+                authorDao.create_author(manga.author)
+                author_id = authorDao.getAuthorId(manga.author)
+            cursor = self.__db.cursor()
+            cursor.execute("UPDATE mangas SET name = %s, description = %s, author_id = %s, cover = %s WHERE id = %s",
+                           [manga.name, manga.description, author_id, manga.cover, manga.id])
+            self.__db.commit()
+            return True
+        except Exception as error:
+            return error
+
 
 class AuthorDao:
     def __init__(self, db):
@@ -128,6 +159,7 @@ class AuthorDao:
             print(record)
         print()
         self.__db.commit()
+
     def delete(self, id):
         cursor = self.__db.cursor()
         cursor.execute("DELETE FROM authors WHERE id = %s", [id])
@@ -139,7 +171,6 @@ class AuthorDao:
             print(record)
         print()
         self.__db.commit()
-
 
 
 class AdministratorDao:

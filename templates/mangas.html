@@ -53,7 +53,7 @@
                 </label>
                 {% elif option == 'Delete' %}
                 <select name="name" class="text-white w-96 rounded-xl lg:rounded-md bg-color-secundary h-16 lg:h-8">
-                    <option>Select a Manga</option>
+                    <option value="-1">Select a Manga</option>
                     {%for manga in mangas%}
                     <option value="{{manga.id}}">{{manga.name}}</option>
                     {%endfor %}
@@ -61,11 +61,19 @@
                 {% else %}
                 <select id="update" name="name" onchange="change()"
                     class="text-white w-96 rounded-xl lg:rounded-md bg-color-secundary h-16 lg:h-8">
-                    <option>Select a Manga</option>
+                    <option value="-1">Select a Manga</option>
                     {%for manga in mangas%}
                     <option value="{{manga.str}}">{{manga.name}}</option>
                     {%endfor %}
                 </select>
+                <label class="hidden mt-6 block space-y-5 lg:space-y-2">
+                    <input id="current_name" name="current_name"
+                        class="text-3xl lg:text-sm px-3 py-2 h-16 lg:h-8 form-input mt-1 block w-96 rounded-xl lg:rounded-md bg-color-secundary border-gray-700 text-white">
+                </label>
+                <label class="hidden mt-6 block space-y-5 lg:space-y-2">
+                    <input id="id" name="id"
+                        class="text-3xl lg:text-sm px-3 py-2 h-16 lg:h-8 form-input mt-1 block w-96 rounded-xl lg:rounded-md bg-color-secundary border-gray-700 text-white">
+                </label>
                 <label class="mt-6 block space-y-5 lg:space-y-2">
                     <span class="text-white text-3xl lg:text-sm">Manga Name</span>
                     <input id="new_name" name="new_name"
@@ -116,7 +124,8 @@
         console.log($("#update").val())
         try {
             let manga = JSON.parse($("#update").val())
-            console.log(manga)
+            $("#current_name").val(manga.name)
+            $("#id").val(manga.id)
             $("#new_name").val(manga.name)
             $("#author_name").val(manga.author)
             $("#cover").val(manga.cover)
@@ -124,6 +133,8 @@
         }
         catch (e) {
             console.log(e)
+            $("#current_name").val("")
+            $("#id").val("")
             $("#new_name").val("")
             $("#author_name").val("")
             $("#cover").val("")
