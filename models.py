@@ -57,9 +57,14 @@ class Chapter:
         self.name = name
         self.manga = manga
         self.id = id
+        str = f'"id": "{id}", "name": "{name}", "manga": "{manga}"'
+        self.str = "{"+str+"}"
 
 
 class Images:
-    def __init__(self, url, chapter_id):
+    def __init__(self, url, chapter_id, id=None):
         self.url = url
         self.chapter_id = chapter_id
+        self.id = id
+        str = f'"id": "{id}", "url": "{url}", "chapter_id": "{chapter_id}"'
+        self.str = "{"+str+"}"

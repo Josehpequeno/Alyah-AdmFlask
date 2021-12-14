@@ -44,34 +44,42 @@
             <h3 class="text-white text-5xl lg:text-xl self-center text-center py-12 lg:py-2 w-full mr-64 lg:mr-40">
                 {{option}} Chapter</h3>
             <form class="mt-4" method="POST" action="{{url_for('chapters'+option)}}">
+                {%for chapter in chapters %}
+                <input type="hidden" name="chapter" id="chapter_{{loop.index}}" value="{{chapter.str}}" />
+                {% endfor %}
+                {%for image in images %}
+                <input type="hidden" name="image" id="image_{{loop.index}}" value="{{image.str}}" />
+                {% endfor %}
                 <div class="flex grid grid-cols-1">
-                    <select name="manga"
-                        class="text-white w-96 rounded-xl lg:rounded-md bg-color-secundary h-16 lg:h-8">
-                        <option>Select a Manga</option>
-                        <option>Manga 1</option>
-                        <option>Manga 2</option>
-                    </select>
                     {% if option == 'Create'%}
-                    <label class="mt-6 block space-y-5 lg:space-y-2">
-                        <span class="text-white text-3xl lg:text-sm">Chapter Name</span>
-                        <input id="name" name="name"
-                            class="text-3xl lg:text-sm px-3 py-2 h-16 lg:h-8 form-input mt-1 block w-96 rounded-xl lg:rounded-md bg-color-secundary border-gray-700 text-white"
-                            {%if chapter %} value="{{chapter.name}}" {% endif %} required autofocus>
-                    </label>
-                    {% elif option == 'Delete' %}
-                    <select name="name"
-                        class="mt-6 text-white w-96 rounded-xl lg:rounded-md bg-color-secundary h-16 lg:h-8">
-                        <option>Select a Chapter</option>
-                        <option>Chapter 1</option>
-                        <option>Chapter 2</option>
-                    </select>
-                    {% else %}
-                    <select name="name"
-                        class="mt-6 text-white w-96 rounded-xl lg:rounded-md bg-color-secundary h-16 lg:h-8">
-                        <option>Select a Chapter</option>
-                        <option>Chapter 1</option>
-                        <option>Chapter 2</option>
-                    </select>
+                    <select id="manga" name="manga" onchange="change('Create')"
+                        class="text-white w-96 rounded-xl lg:rounded-md bg-color-secundary h-16 lg:h-8">
+                        {%else%}
+                        <select id="manga" name="manga" onchange="change('')"
+                            class="text-white w-96 rounded-xl lg:rounded-md bg-color-secundary h-16 lg:h-8">
+                            {%endif%}
+                            <option id="null_manga" value="-{{number_chapters}}">Select a Manga</option>
+                            {%for manga in mangas%}
+                            <option value="{{manga.str}}">{{manga.name}}</option>
+                            {%endfor %}
+                        </select>
+                        {% if option == 'Create'%}
+                        <label class="mt-6 block space-y-5 lg:space-y-2">
+                            <span class="text-white text-3xl lg:text-sm">Chapter Name</span>
+                            <input id="name" name="name"
+                                class="text-3xl lg:text-sm px-3 py-2 h-16 lg:h-8 form-input mt-1 block w-96 rounded-xl lg:rounded-md bg-color-secundary border-gray-700 text-white"
+                                {%if chapter %} value="{{chapter.name}}" {% endif %} required autofocus>
+                        </label>
+                        {% elif option == 'Delete' %}
+                        <select id="name" name="name"
+                            class="mt-6 text-white w-96 rounded-xl lg:rounded-md bg-color-secundary h-16 lg:h-8">
+                            <option value="-1">Select a Chapter</option>
+                        </select>
+                        {% else %}
+                        <select id="name" name="name" onchange="update()"
+                            class="mt-6 text-white w-96 rounded-xl lg:rounded-md bg-color-secundary h-16 lg:h-8">
+                            <option id="null_chapter" value="-{{number_images}}">Select a Chapter</option>
+                        </select>
                 </div>
                 <label class="mt-6 block space-y-5 lg:space-y-2">
                     <span class="text-white text-3xl lg:text-sm">Chapter Name</span>
@@ -131,7 +139,7 @@
                                 <span class="text-white text-3xl lg:text-sm">Urls</span>
                                 <input
                                     class="text-3xl lg:text-sm px-3 py-2 h-16 lg:h-8 form-input mt-1 block w-full rounded-xl lg:rounded-md bg-color-secundary border-gray-700 text-white"
-                                    {%if chapter %} value="{{chapter.name}}" {% endif %} required autofocus>
+                                    required autofocus>
                             </label>
                         </div>
                         <div class="inset-y-0 right-0">
@@ -147,7 +155,7 @@
                                 <span class="text-white text-3xl lg:text-sm">Urls</span>
                                 <input
                                     class="text-3xl lg:text-sm px-3 py-2 h-16 lg:h-8 form-input mt-1 block w-full rounded-xl lg:rounded-md bg-color-secundary border-gray-700 text-white"
-                                    {%if chapter %} value="{{chapter.name}}" {% endif %} required autofocus>
+                                    required autofocus>
                             </label>
                         </div>
                         <div class="inset-y-0 right-0">
@@ -166,6 +174,86 @@
     function remove(it) {
         it = Number(it);
         $("#url_" + it).remove();
+    }
+</script>
+<script>
+    function change(option) {
+        if (option != 'Create') {
+            try {
+                let manga = JSON.parse($("#manga").val())
+                let t = (-1) * Number($("#null_manga").val())
+                let str = `<option id="null_chapter" value="-{{number_images}}">Select a Chapter</option>`;
+                for (let i = 1; i <= t; i++) {
+                    let chapter = JSON.parse($("#chapter_" + i).val())
+                    if (manga.id == chapter.manga) {
+                        str += `<option value='` + $("#chapter_" + i).val() + `'>` + chapter.name + `</option>`
+                    }
+                }
+                $("#name").html(str);
+            }
+            catch (e) {
+                console.log(e)
+            }
+        }
+    }
+</script>
+<script>
+    function update() {
+        try {
+            let chapter = JSON.parse($("#name").val())
+            $("#new_name").val(chapter.name)
+            let t = (-1) * Number($("#null_chapter").val())
+            let it = 0
+            let str = ``;
+            for (let i = 1; i <= t; i++) {
+                let image = JSON.parse($("#image_" + i).val())
+                if (chapter.id == image.chapter_id) {
+                    str += `<div id="url_` + it + `" name="url_` + it + `" class="grid grid-cols-5 mt-6">
+                    <div class="col-span-4">
+                            <label class="block space-y-5 lg:space-y-2 ">
+                                <span class="text-white text-3xl lg:text-sm">Urls</span>
+                                <input
+                                    class="text-3xl lg:text-sm px-3 py-2 h-16 lg:h-8 form-input mt-1 block w-full rounded-xl lg:rounded-md bg-color-secundary border-gray-700 text-white"
+                                    value="`+ image.url + `" required autofocus>
+                            </label>
+                        </div>
+                        <div class="inset-y-0 right-0">
+                            <a id="remove" onclick="remove(`+ it + `)"
+                                class="mt-8 h-16 lg:h-8 inline-flex text-2xl lg:text-sm rounded text-white ml-4 py-1 px-3 rounded-lg hover:border-transparent hover:bg-white button">
+                                <?xml version="1.0"?><svg class="fill-current" xmlns="http://www.w3.org/2000/svg"  viewBox="0 0 24 24" width="24px" height="24px">    <path d="M12,2C6.47,2,2,6.47,2,12s4.47,10,10,10s10-4.47,10-10S17.53,2,12,2z M17,15.59L15.59,17L12,13.41L8.41,17L7,15.59 L10.59,12L7,8.41L8.41,7L12,10.59L15.59,7L17,8.41L13.41,12L17,15.59z"/></svg>
+                            </a>
+                        </div>
+                        </div>`;
+                    it++;
+                }
+            }
+            $("#urls").html(str);
+            var html = `<div id="url_` + it + `" name="url_` + it + `" class="grid grid-cols-5 mt-6">
+                        <div class="col-span-4">
+                            <label class="block space-y-5 lg:space-y-2 ">
+                                <span class="text-white text-3xl lg:text-sm">Urls</span>
+                                <input
+                                    class="text-3xl lg:text-sm px-3 py-2 h-16 lg:h-8 form-input mt-1 block w-full rounded-xl lg:rounded-md bg-color-secundary border-gray-700 text-white"
+                                    required autofocus>
+                            </label>
+                        </div>
+                        <div class="inset-y-0 right-0">
+                            <a id="add" onclick="add(`+ it + `)"
+                                class="mt-8 h-16 lg:h-8 inline-flex text-2xl lg:text-sm rounded text-white ml-4 py-1 px-3 rounded-lg hover:border-transparent hover:bg-white button">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24px" height="24px"
+                                    class="fill-current">
+                                    <path
+                                        d="M 12 2 C 6.4666667 2 2 6.4666667 2 12 C 2 17.533333 6.4666667 22 12 22 C 17.533333 22 22 17.533333 22 12 C 22 6.4666667 17.533333 2 12 2 z M 11 7 L 13 7 L 13 11 L 17 11 L 17 13 L 13 13 L 13 17 L 11 17 L 11 13 L 7 13 L 7 11 L 11 11 L 11 7 z" />
+                                </svg>
+                            </a>
+                        </div>
+                    </div>`
+            $("#urls").append(html);
+        }
+        catch (e) {
+            console.log(e)
+            $("#new_name").val("")
+        }
     }
 </script>
 {% endblock %}

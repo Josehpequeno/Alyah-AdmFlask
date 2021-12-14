@@ -1,4 +1,4 @@
-from models import Mangas, Author, Administrator
+from models import Mangas, Author, Administrator, Chapter, Images
 
 
 class MangasDao:
@@ -267,3 +267,34 @@ class AdministratorDao:
             return True
         except Exception as error:
             return error
+
+class ChapterDao:
+    def __init__(self, db):
+        self.__db = db
+    def getAllChapters(self):
+        cursor = self.__db.cursor()
+        cursor.execute("SELECT * FROM chapters")
+        results = []
+        for row in cursor:
+            id = row[0]
+            name = row[1]
+            manga = row[2]
+            chapter = Chapter(name, manga,id)
+            results.append(chapter)
+        return results
+    
+class ImagesDao:
+    def __init__(self, db):
+        self.__db = db
+    def getAllImages(self):
+        cursor = self.__db.cursor()
+        cursor.execute("SELECT * FROM images")
+        results = []
+        for row in cursor:
+            id = row[0]
+            url = row[1]
+            # description = row[2] column a ser removida, sem uso.
+            chapter_id = row[3]
+            image = Images(url, chapter_id,id)
+            results.append(image)
+        return results

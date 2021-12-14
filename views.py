@@ -1,6 +1,6 @@
 from flask import render_template, request, redirect, session, flash, url_for, send_from_directory
 from app import app, db
-from dao import MangasDao, AdministratorDao, AuthorDao
+from dao import MangasDao, AdministratorDao, AuthorDao, ChapterDao, ImagesDao
 from models import Administrator, Mangas, Chapter
 import hashlib
 
@@ -132,7 +132,14 @@ def chapters(option):
     user = getUserSession()
     if user == None:
         return redirect(url_for('login'))
-    return render_template('chapters.html', option=option, user=user)
+    mangasDao = MangasDao(db)
+    mangas = mangasDao.getAllMangas()
+    chaptersDao = ChapterDao(db)
+    chapters = chaptersDao.getAllChapters()
+    imagesDao = ImagesDao(db)
+    images = imagesDao.getAllImages()
+    return render_template('chapters.html', option=option, user=user, mangas=mangas, chapters=chapters,
+                           number_chapters=len(chapters), images=images, number_images=len(images))
 
 
 @app.route('/chaptersCreate', methods=['POST'])

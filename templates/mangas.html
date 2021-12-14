@@ -121,7 +121,6 @@
 {% block script %}
 <script>
     function change() {
-        console.log($("#update").val())
         try {
             let manga = JSON.parse($("#update").val())
             $("#current_name").val(manga.name)
