@@ -1,4 +1,4 @@
-from flask import render_template, request, redirect, session, flash, url_for, send_from_directory
+from flask import render_template, request, redirect, session, flash, url_for, send_from_directory, jsonify
 from app import app, db
 from dao import MangasDao, AdministratorDao, AuthorDao, ChapterDao, ImagesDao
 from models import Administrator, Mangas, Chapter
@@ -127,6 +127,14 @@ def mangasDelete():
     return render_template('mangas.html', option='Delete', sucess=True, user=user, mangas=mangas)
 
 
+@app.route('/images')
+def images():
+    chapter_id = user = request.args.get('chapter')
+    imagesDao = ImagesDao(db)
+    images = imagesDao.getAllImagesByChapterId(chapter_id)
+    return jsonify(images)
+
+
 @app.route('/chapters/<string:option>')
 def chapters(option):
     user = getUserSession()
@@ -136,10 +144,8 @@ def chapters(option):
     mangas = mangasDao.getAllMangas()
     chaptersDao = ChapterDao(db)
     chapters = chaptersDao.getAllChapters()
-    imagesDao = ImagesDao(db)
-    images = imagesDao.getAllImages()
     return render_template('chapters.html', option=option, user=user, mangas=mangas, chapters=chapters,
-                           number_chapters=len(chapters), images=images, number_images=len(images))
+                           number_chapters=len(chapters))
 
 
 @app.route('/chaptersCreate', methods=['POST'])

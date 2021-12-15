@@ -286,9 +286,9 @@ class ChapterDao:
 class ImagesDao:
     def __init__(self, db):
         self.__db = db
-    def getAllImages(self):
+    def getAllImagesByChapterId(self, chapter_id): 
         cursor = self.__db.cursor()
-        cursor.execute("SELECT * FROM images")
+        cursor.execute("SELECT * FROM images WHERE chapter_id = %s", [chapter_id])
         results = []
         for row in cursor:
             id = row[0]
@@ -296,5 +296,5 @@ class ImagesDao:
             # description = row[2] column a ser removida, sem uso.
             chapter_id = row[3]
             image = Images(url, chapter_id,id)
-            results.append(image)
+            results.append(image.url)
         return results
