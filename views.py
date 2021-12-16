@@ -3,6 +3,7 @@ from app import app, db
 from dao import MangasDao, AdministratorDao, AuthorDao, ChapterDao, ImagesDao
 from models import Administrator, Mangas, Chapter
 import hashlib
+import json
 
 
 def getUserSession():
@@ -94,7 +95,7 @@ def mangasUpdate():
     mangas = mangasDao.getAllMangas()
     if name != new_name:
         check = mangasDao.checkName(new_name)
-        if check == False:
+        if not check:
             flash("Manga Name Already In Use")
             return render_template('mangas.html', option='Update', error=True, user=user, mangas=mangas)
 
@@ -129,10 +130,24 @@ def mangasDelete():
 
 @app.route('/images')
 def images():
-    chapter_id = user = request.args.get('chapter')
-    imagesDao = ImagesDao(db)
-    images = imagesDao.getAllImagesByChapterId(chapter_id)
-    return jsonify(images)
+    chapter_id = request.args.get('chapter')
+    if chapter_id != 'undefined':
+        imagesDao = ImagesDao(db)
+        images = imagesDao.getAllImagesByChapterId(chapter_id)
+        return jsonify(images)
+    else:
+        return jsonify({})
+
+
+@app.route('/getChapter')
+def getChapters():
+    manga_id = request.args.get('manga')
+    if manga_id != 'undefined':
+        chapterDao = ChapterDao(db)
+        chapters = chapterDao.getAllChaptersByMangaId(manga_id)
+        return jsonify(chapters)
+    else:
+        return jsonify({})
 
 
 @app.route('/chapters/<string:option>')
@@ -142,10 +157,7 @@ def chapters(option):
         return redirect(url_for('login'))
     mangasDao = MangasDao(db)
     mangas = mangasDao.getAllMangas()
-    chaptersDao = ChapterDao(db)
-    chapters = chaptersDao.getAllChapters()
-    return render_template('chapters.html', option=option, user=user, mangas=mangas, chapters=chapters,
-                           number_chapters=len(chapters))
+    return render_template('chapters.html', option=option, user=user, mangas=mangas)
 
 
 @app.route('/chaptersCreate', methods=['POST'])
@@ -154,14 +166,33 @@ def chaptersCreate():
     if user == None:
         return redirect(url_for('login'))
     name = request.form['name']
-    manga = request.form['manga']
-    urls = request.form['urls']
+    manga = json.loads(request.form['manga'])
+    manga_id = manga["id"]
+    number_urls = int(request.form['number_urls'])
 
     chapters = Chapter(name, manga)
+    mangasDao = MangasDao(db)
+    mangas = mangasDao.getAllMangas()
+    chaptersDao = ChapterDao(db)
+    check = chaptersDao.checkName(name, manga_id)
+    if not check:
+        flash("Chapter Name Already In Use")
+        return render_template('chapters.html', option='Create', error=True, user=user, mangas=mangas)
 
-    flash("Chapters Successfully Added")
-    # return render_template('mangas.html', option='Create', error=True)
-    return render_template('chapters.html', option='Create', sucess=True, user=user)
+    (create,id) = chaptersDao.create(name, manga_id)
+    if create:
+        imagesDao = ImagesDao(db)
+        urls = []
+        for i in range(0, number_urls):
+            url = request.form[f'url_{i}']
+            print(url)
+            imagesDao.create(url, id)
+        flash("Chapters Successfully Added")
+        return render_template('chapters.html', option='Create', sucess=True, user=user, mangas=mangas)
+    else:
+        print(id)
+        flash("Failed To Add Manga")
+        return render_template('mangas.html', option='Create', error=True, user=user, mangas=mangas)
 
 
 @app.route('/chaptersUpdate', methods=['POST'])

@@ -44,9 +44,6 @@
             <h3 class="text-white text-5xl lg:text-xl self-center text-center py-12 lg:py-2 w-full mr-64 lg:mr-40">
                 {{option}} Chapter</h3>
             <form class="mt-4" method="POST" action="{{url_for('chapters'+option)}}">
-                {%for chapter in chapters %}
-                <input type="hidden" name="chapter" id="chapter_{{loop.index}}" value="{{chapter.str}}" />
-                {% endfor %}
                 <div class="flex grid grid-cols-1">
                     {% if option == 'Create'%}
                     <select id="manga" name="manga" onchange="change('Create')"
@@ -55,7 +52,7 @@
                         <select id="manga" name="manga" onchange="change('')"
                             class="text-white w-96 rounded-xl lg:rounded-md bg-color-secundary h-16 lg:h-8">
                             {%endif%}
-                            <option id="null_manga" value="-{{number_chapters}}">Select a Manga</option>
+                            <option value="-1">Select a Manga</option>
                             {%for manga in mangas%}
                             <option value="{{manga.str}}">{{manga.name}}</option>
                             {%endfor %}
@@ -87,13 +84,14 @@
                 {% endif %}
                 {% if option == 'Create'%}
                 <div name="urls" id="urls">
-                    <div id="url_0" name="url_0" class="grid grid-cols-5 mt-6">
+                    <div id="url_0" class="grid grid-cols-5 mt-6">
                         <div class="col-span-4">
                             <label class="block space-y-5 lg:space-y-2 ">
                                 <span class="text-white text-3xl lg:text-sm">Urls</span>
-                                <input
+                                <input id="input-url" name="url_0"
                                     class="text-3xl lg:text-sm px-3 py-2 h-16 lg:h-8 form-input mt-1 block w-full rounded-xl lg:rounded-md bg-color-secundary border-gray-700 text-white"
-                                    {%if chapter %} value="{{chapter.name}}" {% endif %} required autofocus>
+                                    required autofocus>
+                                <input name="number_urls" type="hidden" value="1">
                             </label>
                         </div>
                         <div class="inset-y-0 right-0">
@@ -109,8 +107,8 @@
                     </div>
                 </div>
                 {% elif option== 'Update' %}
-                <div class="mt-6 lg:mt-3 inset-0 text-center">
-                    <a id="change" onclick="showUrls(true)"
+                <div id="show" class="mt-6 lg:mt-3 inset-0 text-center">
+                    <a onclick="showUrls(true)"
                         class="h-16 lg:h-8 inline-flex text-2xl lg:text-sm rounded text-white ml-4 py-1 px-3 rounded-lg hover:border-transparent hover:bg-white button">
                         <span>Show Urls</span>
                     </a>
@@ -140,10 +138,11 @@
 <script>
     function add(it) {
         it = Number(it);
+        let value = $("#input-url").val();
         $("#url_" + it).html(`<div class="col-span-4">
                             <label class="block space-y-5 lg:space-y-2 ">
                                 <span class="text-white text-3xl lg:text-sm">Urls</span>
-                                <input
+                                <input value="`+ value + `" name="url_`+it+`"
                                     class="text-3xl lg:text-sm px-3 py-2 h-16 lg:h-8 form-input mt-1 block w-full rounded-xl lg:rounded-md bg-color-secundary border-gray-700 text-white"
                                     required autofocus>
                             </label>
@@ -159,9 +158,10 @@
                         <div class="col-span-4">
                             <label class="block space-y-5 lg:space-y-2 ">
                                 <span class="text-white text-3xl lg:text-sm">Urls</span>
-                                <input
+                                <input id="input-url" name="url_`+it+`"
                                     class="text-3xl lg:text-sm px-3 py-2 h-16 lg:h-8 form-input mt-1 block w-full rounded-xl lg:rounded-md bg-color-secundary border-gray-700 text-white"
-                                    required autofocus>
+                                    autofocus>
+                                    <input name="number_urls" type="hidden" value="`+ (it + 1) + `">
                             </label>
                         </div>
                         <div class="inset-y-0 right-0">
@@ -184,22 +184,25 @@
 </script>
 <script>
     function change(option) {
+        $("#new_name").val("");
         if (option != 'Create') {
             try {
                 showUrls(false);
-                let manga = JSON.parse($("#manga").val())
-                let t = (-1) * Number($("#null_manga").val())
-                let str = `<option id="null_chapter" value="-{{number_images}}">Select a Chapter</option>`;
-                for (let i = 1; i <= t; i++) {
-                    let chapter = JSON.parse($("#chapter_" + i).val())
-                    if (manga.id == chapter.manga) {
-                        str += `<option value='` + $("#chapter_" + i).val() + `'>` + chapter.name + `</option>`
-                    }
+                let manga = JSON.parse($("#manga").val());
+                if (manga != -1) {
+                    let str = `<option value="-1">Select a Chapter</option>`;
+                    $.get("/getChapter?manga=" + manga.id, function (data) {
+                        for (let i = 0; i < data.length; i++) {
+                            let chapter = JSON.parse(data[i]);
+                            console.log(JSON.stringify(chapter));
+                            str += `<option value='` + JSON.stringify(chapter) + `'>` + chapter.name + `</option>`
+                        }
+                        $("#name").html(str);
+                    });
                 }
-                $("#name").html(str);
             }
             catch (e) {
-                console.log(e);
+                // console.log(e);
                 showUrls(false);
             }
         }
@@ -213,7 +216,7 @@
             showUrls(false);
         }
         catch (e) {
-            console.log(e)
+            // console.log(e)
             $("#new_name").val("");
             showUrls(false);
         }
@@ -222,8 +225,11 @@
 <script>
     function showUrls(blank) {
         try {
-            if (blank) {
-                let chapter = JSON.parse($("#name").val())
+            let chapter = JSON.parse($("#name").val());
+            if (blank == true) {
+                if (chapter == -1) {
+                    return showUrls(false);
+                }
                 let str = ``;
                 $.get("/images?chapter=" + chapter.id, function (data) {
                     for (let i = 0; i < data.length; i++) {
@@ -266,15 +272,33 @@
                                     </div>
                                     </div>`
                     $("#urls").append(html);
+                    $("#show").html(`
+                    <a  onclick="hideUrls()"
+                    class="h-16 lg:h-8 inline-flex text-2xl lg:text-sm rounded text-white ml-4 py-1 px-3 rounded-lg hover:border-transparent hover:bg-white button">
+                    <span>Hide Urls</span>
+                    </a>
+                    `);
                 });
             } else {
+                // console.log("Ok!")
                 $("#urls").html("");
             }
         }
         catch (e) {
-            console.log(e)
+            // console.log(e)
             showUrls(false);
         }
+    }
+</script>
+<script>
+    function hideUrls(blank) {
+        showUrls(false);
+        $("#show").html(`
+            <a  onclick="showUrls(true)"
+            class="h-16 lg:h-8 inline-flex text-2xl lg:text-sm rounded text-white ml-4 py-1 px-3 rounded-lg hover:border-transparent hover:bg-white button">
+            <span>Show Urls</span>
+            </a>
+            `);
     }
 </script>
 {% endblock %}

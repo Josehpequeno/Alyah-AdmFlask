@@ -55,13 +55,13 @@ class MangasDao:
             cursor.execute("INSERT INTO mangas (name, description, author_id, cover) VALUES (%s,%s,%s,%s)", [
                 manga.name, manga.description, author_id, manga.cover])
             self.__db.commit()
-            cursor.execute("SELECT * FROM mangas")
-            records = cursor.fetchall()
-            print("Select data is: ")
-            for record in records:
-                print(record)
-            print()
-            self.__db.commit()
+            # cursor.execute("SELECT * FROM mangas")
+            # records = cursor.fetchall()
+            # print("Select data is: ")
+            # for record in records:
+            #     print(record)
+            # print()
+            # self.__db.commit()
             return True
         except Exception as error:
             return error
@@ -149,16 +149,22 @@ class AuthorDao:
             return error
 
     def create_author(self, name):
-        cursor = self.__db.cursor()
-        cursor.execute("INSERT INTO authors (name) VALUES (%s)", [name])
-        self.__db.commit()
-        cursor.execute("SELECT * FROM authors")
-        records = cursor.fetchall()
-        print("Select data is: ")
-        for record in records:
-            print(record)
-        print()
-        self.__db.commit()
+        try:
+            cursor = self.__db.cursor()
+            cursor.execute("INSERT INTO authors (name) VALUES (%s)", [name])
+            self.__db.commit()
+            # cursor.execute("SELECT * FROM authors")
+            # records = cursor.fetchall()
+            # print("Select data is: ")
+            # for record in records:
+            #     print(record)
+            # print()
+            # self.__db.commit()
+        except Exception as error:
+            cursor = self.__db.cursor()
+            cursor.execute("ROLLBACK")
+            self.__db.commit()
+            return error
 
     def delete(self, id):
         cursor = self.__db.cursor()
@@ -240,15 +246,18 @@ class AdministratorDao:
             cursor.execute("INSERT INTO admin_user (name, email, password) VALUES (%s,%s,%s)", [
                 adm.name, adm.email, adm.password])
             self.__db.commit()
-            cursor.execute("SELECT * FROM admin_user")
-            records = cursor.fetchall()
-            print("Select data is: ")
-            for record in records:
-                print(record)
-            print()
-            self.__db.commit()
+            # cursor.execute("SELECT * FROM admin_user")
+            # records = cursor.fetchall()
+            # print("Select data is: ")
+            # for record in records:
+            #     print(record)
+            # print()
+            # self.__db.commit()
             return True
         except Exception as error:
+            cursor = self.__db.cursor()
+            cursor.execute("ROLLBACK")
+            self.__db.commit()
             return error
 
     def update(self, adm, id):
@@ -268,9 +277,38 @@ class AdministratorDao:
         except Exception as error:
             return error
 
+
 class ChapterDao:
     def __init__(self, db):
         self.__db = db
+
+    def checkName(self, name, manga_id):
+        cursor = self.__db.cursor()
+        cursor.execute(
+            "SELECT * FROM chapters WHERE name = %s AND manga_id = %s", [name, manga_id])
+        results = cursor.fetchall()
+        if results != []:
+            return False
+        else:
+            return True
+
+    def create(self, name, manga_id):
+        try:
+            cursor = self.__db.cursor()
+            cursor.execute("INSERT INTO chapters (name, manga_id) VALUES (%s,%s) RETURNING ID", [
+                           name, manga_id])
+            results = []
+            id = 0
+            for row in cursor:
+                id = row[0]
+            self.__db.commit()
+            return (True, id)
+        except Exception as error:
+            cursor = self.__db.cursor()
+            cursor.execute("ROLLBACK")
+            self.__db.commit()
+            return (False, error)
+
     def getAllChapters(self):
         cursor = self.__db.cursor()
         cursor.execute("SELECT * FROM chapters")
@@ -279,22 +317,55 @@ class ChapterDao:
             id = row[0]
             name = row[1]
             manga = row[2]
-            chapter = Chapter(name, manga,id)
+            chapter = Chapter(name, manga, id)
             results.append(chapter)
         return results
-    
+
+    def getAllChaptersByMangaId(self, manga_id):
+        cursor = self.__db.cursor()
+        cursor.execute(
+            "SELECT * FROM chapters WHERE manga_id = %s", [manga_id])
+        results = []
+        for row in cursor:
+            id = row[0]
+            name = row[1]
+            manga = row[2]
+            chapter = Chapter(name, manga, id)
+            results.append(chapter.str)
+        return results
+
+
 class ImagesDao:
     def __init__(self, db):
         self.__db = db
-    def getAllImagesByChapterId(self, chapter_id): 
+
+    def create(self, url, chapter_id):
+        try:
+            cursor = self.__db.cursor()
+            cursor.execute("INSERT INTO images (url, chapter_id) VALUES (%s,%s)", [
+                           url, chapter_id])
+            results = []
+            id = 0
+            for row in cursor:
+                id = row[0]
+            self.__db.commit()
+            return True
+        except Exception as error:
+            cursor = self.__db.cursor()
+            cursor.execute("ROLLBACK")
+            self.__db.commit()
+            return error
+
+    def getAllImagesByChapterId(self, chapter_id):
         cursor = self.__db.cursor()
-        cursor.execute("SELECT * FROM images WHERE chapter_id = %s", [chapter_id])
+        cursor.execute(
+            "SELECT * FROM images WHERE chapter_id = %s", [chapter_id])
         results = []
         for row in cursor:
             id = row[0]
             url = row[1]
             # description = row[2] column a ser removida, sem uso.
             chapter_id = row[3]
-            image = Images(url, chapter_id,id)
+            image = Images(url, chapter_id, id)
             results.append(image.url)
         return results
