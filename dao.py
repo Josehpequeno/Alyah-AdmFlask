@@ -48,20 +48,12 @@ class MangasDao:
             if author_id == None:
                 authorDao.create_author(manga.author)
                 author_id = authorDao.getAuthorId(manga.author)
-            # print("here: " + str(author_id))
             if self.checkName(manga.name) == False:
                 return False
             cursor = self.__db.cursor()
             cursor.execute("INSERT INTO mangas (name, description, author_id, cover) VALUES (%s,%s,%s,%s)", [
                 manga.name, manga.description, author_id, manga.cover])
             self.__db.commit()
-            # cursor.execute("SELECT * FROM mangas")
-            # records = cursor.fetchall()
-            # print("Select data is: ")
-            # for record in records:
-            #     print(record)
-            # print()
-            # self.__db.commit()
             return True
         except Exception as error:
             return error
@@ -71,13 +63,6 @@ class MangasDao:
             cursor = self.__db.cursor()
             cursor.execute("DELETE FROM mangas WHERE id = %s", [id])
             self.__db.commit()
-            # cursor.execute("SELECT * FROM mangas")
-            # records = cursor.fetchall()
-            # print("Select data is: ")
-            # for record in records:
-            #     print(record)
-            # print()
-            # self.__db.commit()
             return True
         except Exception as error:
             return error
@@ -153,13 +138,6 @@ class AuthorDao:
             cursor = self.__db.cursor()
             cursor.execute("INSERT INTO authors (name) VALUES (%s)", [name])
             self.__db.commit()
-            # cursor.execute("SELECT * FROM authors")
-            # records = cursor.fetchall()
-            # print("Select data is: ")
-            # for record in records:
-            #     print(record)
-            # print()
-            # self.__db.commit()
         except Exception as error:
             cursor = self.__db.cursor()
             cursor.execute("ROLLBACK")
@@ -246,13 +224,6 @@ class AdministratorDao:
             cursor.execute("INSERT INTO admin_user (name, email, password) VALUES (%s,%s,%s)", [
                 adm.name, adm.email, adm.password])
             self.__db.commit()
-            # cursor.execute("SELECT * FROM admin_user")
-            # records = cursor.fetchall()
-            # print("Select data is: ")
-            # for record in records:
-            #     print(record)
-            # print()
-            # self.__db.commit()
             return True
         except Exception as error:
             cursor = self.__db.cursor()
@@ -266,13 +237,6 @@ class AdministratorDao:
             cursor.execute("UPDATE admin_user SET name = %s, email = %s, password = %s WHERE id = %s", [
                 adm.name, adm.email, adm.password, id])
             self.__db.commit()
-            # cursor.execute("SELECT * FROM admin_user")
-            # records = cursor.fetchall()
-            # print("Select data is: ")
-            # for record in records:
-            #     print(record)
-            # print()
-            # self.__db.commit()
             return True
         except Exception as error:
             return error
@@ -302,14 +266,6 @@ class ChapterDao:
             for row in cursor:
                 id = row[0]
             self.__db.commit()
-            # print (id)
-            # cursor.execute("SELECT * FROM chapters WHERE manga_id = %s", [manga_id])
-            # records = cursor.fetchall()
-            # print("Select data is: ")
-            # for record in records:
-            #     print(record)
-            # print()
-            # self.__db.commit()
             return (True, id)
         except Exception as error:
             cursor = self.__db.cursor()

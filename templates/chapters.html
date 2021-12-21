@@ -263,7 +263,6 @@
                     $.get("/getChapter?manga=" + manga.id, function (data) {
                         for (let i = 0; i < data.length; i++) {
                             let chapter = JSON.parse(data[i]);
-                            console.log(JSON.stringify(chapter));
                             str += `<option value='` + JSON.stringify(chapter) + `'>` + chapter.name + `</option>`
                         }
                         $("#name").html(str);
@@ -271,7 +270,6 @@
                 }
             }
             catch (e) {
-                // console.log(e);
                 showUrls(false);
             }
         }
@@ -285,7 +283,6 @@
             showUrls(false);
         }
         catch (e) {
-            // console.log(e)
             $("#new_name").val("");
             showUrls(false);
         }
@@ -350,13 +347,11 @@
                     `);
                 });
             } else {
-                // console.log("Ok!")
                 $("#urls").html("");
                 $('#number_urls').attr("value", 0);
             }
         }
         catch (e) {
-            // console.log(e)
             showUrls(false);
         }
     }
