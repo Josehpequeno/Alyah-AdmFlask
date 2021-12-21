@@ -38,9 +38,15 @@ def authors(option):
             flash('Choose A Valid Option')
             authors = author_dao.getAllAuthors()
             return render_template('authors.html', option=option, user=user, authors=authors, error=True)
-        author_dao.delete(id)
-        authors = author_dao.getAllAuthors()
-        return render_template('authors.html', option=option, user=user, authors=authors, sucess=True)
+        delete = author_dao.delete(id)
+        if delete:
+            flash("Author Deleted Successfully")
+            authors = author_dao.getAllAuthors()
+            return render_template('authors.html', option=option, user=user, authors=authors, sucess=True)
+        else:
+            print(delete)
+            flash("Failed To Delete Author")
+            return render_template('authors.html', option=option, user=user, authors=authors, error=True)
 
 
 @app.route('/mangas/<string:option>')
@@ -169,8 +175,6 @@ def chaptersCreate():
     manga = json.loads(request.form['manga'])
     manga_id = manga["id"]
     number_urls = int(request.form['number_urls'])
-
-    chapters = Chapter(name, manga)
     mangasDao = MangasDao(db)
     mangas = mangasDao.getAllMangas()
     chaptersDao = ChapterDao(db)
@@ -179,14 +183,15 @@ def chaptersCreate():
         flash("Chapter Name Already In Use")
         return render_template('chapters.html', option='Create', error=True, user=user, mangas=mangas)
 
-    (create,id) = chaptersDao.create(name, manga_id)
+    (create, id) = chaptersDao.create(name, manga_id)
     if create:
         imagesDao = ImagesDao(db)
-        urls = []
         for i in range(0, number_urls):
             url = request.form[f'url_{i}']
-            print(url)
-            imagesDao.create(url, id)
+            if url == "":
+                pass
+            else:
+                imagesDao.create(url, id)
         flash("Chapters Successfully Added")
         return render_template('chapters.html', option='Create', sucess=True, user=user, mangas=mangas)
     else:
@@ -201,15 +206,46 @@ def chaptersUpdate():
     if user == None:
         return redirect(url_for('login'))
     name = request.form['name']
+    chapter_json = json.loads(name)
+    chapter = Chapter(chapter_json["name"],
+                      chapter_json["manga"], chapter_json["id"])
     new_name = request.form['new_name']
-    manga = request.form['manga']
-    urls = request.form['urls']
-
+    manga = json.loads(request.form['manga'])
+    manga_id = manga["id"]
+    number_urls = int(request.form['number_urls'])
     chapters = Chapter(name, manga)
-
-    flash("Chapters Updated Successfully")
-    # return render_template('mangas.html', option='Create', error=True)
-    return render_template('chapters.html', option='Update', sucess=True, user=user)
+    mangasDao = MangasDao(db)
+    mangas = mangasDao.getAllMangas()
+    chaptersDao = ChapterDao(db)
+    check = chaptersDao.checkName(name, manga_id)
+    if not check and new_name != chapter.name:
+        flash("Chapter Name Already In Use")
+        return render_template('chapters.html', option='Update', error=True, user=user, mangas=mangas)
+    chapter.name = new_name
+    chapterDao = ChapterDao(db)
+    update = chapterDao.update(chapter)
+    if update:
+        imagesDao = ImagesDao(db)
+        delete = True
+        if number_urls > 0:
+            delete = imagesDao.delete(chapter.id)
+        if delete:
+            for i in range(0, number_urls):
+                url = request.form[f'url_{i}']
+                if url == "":
+                    pass
+                else:
+                    imagesDao.create(url, chapter.id)
+            flash("Chapter Successfully Updated")
+            return render_template('chapters.html', option='Update', sucess=True, user=user, mangas=mangas)
+        else:
+            print(delete)
+            flash("Failed To Update Chapter")
+            return render_template('chapters.html', option='Update', error=True, user=user, mangas=mangas)
+    else:
+        print(update)
+        flash("Failed To Update Chapter")
+        return render_template('chapters.html', option='Update', error=True, user=user, mangas=mangas)
 
 
 @app.route('/chaptersDelete', methods=['POST'])
@@ -217,11 +253,25 @@ def chaptersDelete():
     user = getUserSession()
     if user == None:
         return redirect(url_for('login'))
-    name = request.form['name']
-
-    flash("Manga Successfully Deleted")
-    # return render_template('mangas.html', option='Create', error=True)
-    return render_template('chapters.html', option='Delete', sucess=True, user=user)
+    chapter = json.loads(request.form['name'])
+    chaptersDao = ChapterDao(db)
+    delete = chaptersDao.delete(chapter["id"])
+    mangasDao = MangasDao(db)
+    mangas = mangasDao.getAllMangas()
+    if delete:
+        imagesDao = ImagesDao(db)
+        delete = imagesDao.delete(chapter["id"])
+        if delete:
+            flash("Chapter Successfully Deleted")
+            return render_template('chapters.html', option='Delete', sucess=True, user=user, mangas=mangas)
+        else:
+            print(delete)
+            flash("Chapter Deletion Failed")
+            return render_template('chapters.html', option='Delete', error=True, user=user, mangas=mangas)
+    else:
+        print(delete)
+        flash("Chapter Deletion Failed")
+        return render_template('chapters.html', option='Delete', error=True, user=user, mangas=mangas)
 
 
 @app.route('/addUser', methods=['GET', 'POST'])

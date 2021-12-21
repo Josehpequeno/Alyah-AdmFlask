@@ -83,19 +83,19 @@
                 </label>
                 {% endif %}
                 {% if option == 'Create'%}
+                <input id="number_urls" name="number_urls" type="hidden" value="1">
                 <div name="urls" id="urls">
                     <div id="url_0" class="grid grid-cols-5 mt-6">
                         <div class="col-span-4">
                             <label class="block space-y-5 lg:space-y-2 ">
                                 <span class="text-white text-3xl lg:text-sm">Urls</span>
-                                <input id="input-url" name="url_0"
+                                <input id="input-url_0" name="url_0"
                                     class="text-3xl lg:text-sm px-3 py-2 h-16 lg:h-8 form-input mt-1 block w-full rounded-xl lg:rounded-md bg-color-secundary border-gray-700 text-white"
                                     required autofocus>
-                                <input name="number_urls" type="hidden" value="1">
                             </label>
                         </div>
-                        <div class="inset-y-0 right-0">
-                            <a id="add" onclick="add(0)"
+                        <div id="add" class="inset-y-0 right-0">
+                            <a onclick="add(0)"
                                 class="mt-8 h-16 lg:h-8 inline-flex text-2xl lg:text-sm rounded text-white ml-4 py-1 px-3 rounded-lg hover:border-transparent hover:bg-white button">
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24px" height="24px"
                                     class="fill-current">
@@ -106,13 +106,14 @@
                         </div>
                     </div>
                 </div>
-                {% elif option== 'Update' %}
+                {% elif option == 'Update' %}
                 <div id="show" class="mt-6 lg:mt-3 inset-0 text-center">
                     <a onclick="showUrls(true)"
                         class="h-16 lg:h-8 inline-flex text-2xl lg:text-sm rounded text-white ml-4 py-1 px-3 rounded-lg hover:border-transparent hover:bg-white button">
                         <span>Show Urls</span>
                     </a>
                 </div>
+                <input id="number_urls" name="number_urls" type="hidden" value="0" />
                 <div name="urls" id="urls">
                 </div>
                 {% endif %}
@@ -138,17 +139,17 @@
 <script>
     function add(it) {
         it = Number(it);
-        let value = $("#input-url").val();
+        let value = $("#input-url_" + it).val();
         $("#url_" + it).html(`<div class="col-span-4">
                             <label class="block space-y-5 lg:space-y-2 ">
                                 <span class="text-white text-3xl lg:text-sm">Urls</span>
-                                <input value="`+ value + `" name="url_`+it+`"
+                                <input id="input-url_`+ it + `" value="` + value + `" name="url_` + it + `"
                                     class="text-3xl lg:text-sm px-3 py-2 h-16 lg:h-8 form-input mt-1 block w-full rounded-xl lg:rounded-md bg-color-secundary border-gray-700 text-white"
-                                    required autofocus>
+                                    autofocus>
                             </label>
                         </div>
-                        <div class="inset-y-0 right-0">
-                            <a id="remove" onclick="remove(`+ it + `)"
+                        <div id="remove" class="inset-y-0 right-0">
+                            <a onclick="remove(`+ it + `)"
                                 class="mt-8 h-16 lg:h-8 inline-flex text-2xl lg:text-sm rounded text-white ml-4 py-1 px-3 rounded-lg hover:border-transparent hover:bg-white button">
                                 <?xml version="1.0"?><svg class="fill-current" xmlns="http://www.w3.org/2000/svg"  viewBox="0 0 24 24" width="24px" height="24px">    <path d="M12,2C6.47,2,2,6.47,2,12s4.47,10,10,10s10-4.47,10-10S17.53,2,12,2z M17,15.59L15.59,17L12,13.41L8.41,17L7,15.59 L10.59,12L7,8.41L8.41,7L12,10.59L15.59,7L17,8.41L13.41,12L17,15.59z"/></svg>
                             </a>
@@ -158,14 +159,13 @@
                         <div class="col-span-4">
                             <label class="block space-y-5 lg:space-y-2 ">
                                 <span class="text-white text-3xl lg:text-sm">Urls</span>
-                                <input id="input-url" name="url_`+it+`"
+                                <input id="input-url_`+ it + `" name="url_` + it + `" value=""
                                     class="text-3xl lg:text-sm px-3 py-2 h-16 lg:h-8 form-input mt-1 block w-full rounded-xl lg:rounded-md bg-color-secundary border-gray-700 text-white"
                                     autofocus>
-                                    <input name="number_urls" type="hidden" value="`+ (it + 1) + `">
                             </label>
                         </div>
-                        <div class="inset-y-0 right-0">
-                            <a id="add" onclick="add(`+ it + `)"
+                        <div id="add" class="inset-y-0 right-0">
+                            <a onclick="add(`+ it + `)"
                                 class="mt-8 h-16 lg:h-8 inline-flex text-2xl lg:text-sm rounded text-white ml-4 py-1 px-3 rounded-lg hover:border-transparent hover:bg-white button">
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24px" height="24px"
                                     class="fill-current">
@@ -176,10 +176,79 @@
                         </div>
                     </div>`
         $("#urls").append(html);
+        $('#number_urls').attr("value", (it + 1));
     }
     function remove(it) {
         it = Number(it);
         $("#url_" + it).remove();
+        let urls = Number($("#number_urls").val())
+        if (urls == 2) {
+            for (let i = it + 1; i < urls; i++) {
+                let value = $("#input-url_" + 1).val();
+                $("#url_" + i).html(`<div class="col-span-4">
+                    <label class="block space-y-5 lg:space-y-2 ">
+                        <span class="text-white text-3xl lg:text-sm">Urls</span>
+                        <input id="input-url_`+ 0 + `" value="` + value + `" name="url_` + 0 + `"
+                        class="text-3xl lg:text-sm px-3 py-2 h-16 lg:h-8 form-input mt-1 block w-full rounded-xl lg:rounded-md bg-color-secundary border-gray-700 text-white"
+                        autofocus>
+                        </label>
+                        </div>
+                        <div id="add" class="inset-y-0 right-0">
+                            <a onclick="add(`+ 0 + `)"
+                            class="mt-8 h-16 lg:h-8 inline-flex text-2xl lg:text-sm rounded text-white ml-4 py-1 px-3 rounded-lg hover:border-transparent hover:bg-white button">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24px" height="24px"
+                            class="fill-current">
+                            <path
+                            d="M 12 2 C 6.4666667 2 2 6.4666667 2 12 C 2 17.533333 6.4666667 22 12 22 C 17.533333 22 22 17.533333 22 12 C 22 6.4666667 17.533333 2 12 2 z M 11 7 L 13 7 L 13 11 L 17 11 L 17 13 L 13 13 L 13 17 L 11 17 L 11 13 L 7 13 L 7 11 L 11 11 L 11 7 z" />
+                            </svg>
+                            </a>
+                            </div>`);
+                $("#url_" + i).attr("id", "url_" + (i - 1))
+            }
+            $('#number_urls').attr("value", (urls - 1));
+        } else {
+            for (let i = it + 1; i < urls; i++) {
+                let value = $("#input-url_" + i).val();
+                if (i < urls - 1) {
+                    $("#url_" + i).html(`<div class="col-span-4">
+                    <label class="block space-y-5 lg:space-y-2 ">
+                        <span class="text-white text-3xl lg:text-sm">Urls</span>
+                        <input id="input-url_`+ (i - 1) + `" value="` + value + `" name="url_` + (i - 1) + `"
+                        class="text-3xl lg:text-sm px-3 py-2 h-16 lg:h-8 form-input mt-1 block w-full rounded-xl lg:rounded-md bg-color-secundary border-gray-700 text-white"
+                        autofocus>
+                        </label>
+                        </div>
+                        <div id="remove" class="inset-y-0 right-0">
+                            <a onclick="remove(`+ (i - 1) + `)"
+                                class="mt-8 h-16 lg:h-8 inline-flex text-2xl lg:text-sm rounded text-white ml-4 py-1 px-3 rounded-lg hover:border-transparent hover:bg-white button">
+                                <?xml version="1.0"?><svg class="fill-current" xmlns="http://www.w3.org/2000/svg"  viewBox="0 0 24 24" width="24px" height="24px">    <path d="M12,2C6.47,2,2,6.47,2,12s4.47,10,10,10s10-4.47,10-10S17.53,2,12,2z M17,15.59L15.59,17L12,13.41L8.41,17L7,15.59 L10.59,12L7,8.41L8.41,7L12,10.59L15.59,7L17,8.41L13.41,12L17,15.59z"/></svg>
+                            </a>
+                        </div>`);
+                    $("#url_" + i).attr("id", "url_" + (i - 1))
+                } else {
+                    $("#url_" + i).html(`<div class="col-span-4">
+                    <label class="block space-y-5 lg:space-y-2 ">
+                        <span class="text-white text-3xl lg:text-sm">Urls</span>
+                        <input id="input-url_`+ (i - 1) + `" value="` + value + `" name="url_` + (i - 1) + `"
+                        class="text-3xl lg:text-sm px-3 py-2 h-16 lg:h-8 form-input mt-1 block w-full rounded-xl lg:rounded-md bg-color-secundary border-gray-700 text-white"
+                        autofocus>
+                        </label>
+                        </div>
+                        <div id="add" class="inset-y-0 right-0">
+                            <a onclick="add(`+ 0 + `)"
+                            class="mt-8 h-16 lg:h-8 inline-flex text-2xl lg:text-sm rounded text-white ml-4 py-1 px-3 rounded-lg hover:border-transparent hover:bg-white button">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24px" height="24px"
+                            class="fill-current">
+                            <path
+                            d="M 12 2 C 6.4666667 2 2 6.4666667 2 12 C 2 17.533333 6.4666667 22 12 22 C 17.533333 22 22 17.533333 22 12 C 22 6.4666667 17.533333 2 12 2 z M 11 7 L 13 7 L 13 11 L 17 11 L 17 13 L 13 13 L 13 17 L 11 17 L 11 13 L 7 13 L 7 11 L 11 11 L 11 7 z" />
+                            </svg>
+                            </a>
+                            </div>`);
+                    $("#url_" + i).attr("id", "url_" + (i - 1))
+                }
+            }
+            $('#number_urls').attr("value", (urls - 1));
+        }
     }
 </script>
 <script>
@@ -237,9 +306,9 @@
                     <div class="col-span-4">
                             <label class="block space-y-5 lg:space-y-2 ">
                                 <span class="text-white text-3xl lg:text-sm">Urls</span>
-                                <input
+                                <input id="input-url_`+ (i) + `"
                                     class="text-3xl lg:text-sm px-3 py-2 h-16 lg:h-8 form-input mt-1 block w-full rounded-xl lg:rounded-md bg-color-secundary border-gray-700 text-white"
-                                    value="`+ data[i] + `" required autofocus>
+                                    value="`+ data[i] + `" name="url_` + i + `" autofocus>
                             </label>
                         </div>
                         <div class="inset-y-0 right-0">
@@ -255,9 +324,9 @@
                         <div class="col-span-4">
                             <label class="block space-y-5 lg:space-y-2 ">
                                 <span class="text-white text-3xl lg:text-sm">Urls</span>
-                                <input
+                                <input id="input-url_`+ (data.length) + `" value=""
                                 class="text-3xl lg:text-sm px-3 py-2 h-16 lg:h-8 form-input mt-1 block w-full rounded-xl lg:rounded-md bg-color-secundary border-gray-700 text-white"
-                                    required autofocus>
+                                name="url_` + data.length + `" autofocus>
                                     </label>
                                     </div>
                                     <div class="inset-y-0 right-0">
@@ -272,6 +341,7 @@
                                     </div>
                                     </div>`
                     $("#urls").append(html);
+                    $('#number_urls').attr("value", (data.length + 1));
                     $("#show").html(`
                     <a  onclick="hideUrls()"
                     class="h-16 lg:h-8 inline-flex text-2xl lg:text-sm rounded text-white ml-4 py-1 px-3 rounded-lg hover:border-transparent hover:bg-white button">
@@ -282,6 +352,7 @@
             } else {
                 // console.log("Ok!")
                 $("#urls").html("");
+                $('#number_urls').attr("value", 0);
             }
         }
         catch (e) {

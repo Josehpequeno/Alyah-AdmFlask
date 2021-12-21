@@ -71,13 +71,13 @@ class MangasDao:
             cursor = self.__db.cursor()
             cursor.execute("DELETE FROM mangas WHERE id = %s", [id])
             self.__db.commit()
-            cursor.execute("SELECT * FROM mangas")
-            records = cursor.fetchall()
-            print("Select data is: ")
-            for record in records:
-                print(record)
-            print()
-            self.__db.commit()
+            # cursor.execute("SELECT * FROM mangas")
+            # records = cursor.fetchall()
+            # print("Select data is: ")
+            # for record in records:
+            #     print(record)
+            # print()
+            # self.__db.commit()
             return True
         except Exception as error:
             return error
@@ -167,16 +167,16 @@ class AuthorDao:
             return error
 
     def delete(self, id):
-        cursor = self.__db.cursor()
-        cursor.execute("DELETE FROM authors WHERE id = %s", [id])
-        self.__db.commit()
-        cursor.execute("SELECT * FROM authors")
-        records = cursor.fetchall()
-        print("Select data is: ")
-        for record in records:
-            print(record)
-        print()
-        self.__db.commit()
+        try:
+            cursor = self.__db.cursor()
+            cursor.execute("DELETE FROM authors WHERE id = %s", [id])
+            self.__db.commit()
+            return True
+        except Exception as error:
+            cursor = self.__db.cursor()
+            cursor.execute("ROLLBACK")
+            self.__db.commit()
+            return error
 
 
 class AdministratorDao:
@@ -266,13 +266,13 @@ class AdministratorDao:
             cursor.execute("UPDATE admin_user SET name = %s, email = %s, password = %s WHERE id = %s", [
                 adm.name, adm.email, adm.password, id])
             self.__db.commit()
-            cursor.execute("SELECT * FROM admin_user")
-            records = cursor.fetchall()
-            print("Select data is: ")
-            for record in records:
-                print(record)
-            print()
-            self.__db.commit()
+            # cursor.execute("SELECT * FROM admin_user")
+            # records = cursor.fetchall()
+            # print("Select data is: ")
+            # for record in records:
+            #     print(record)
+            # print()
+            # self.__db.commit()
             return True
         except Exception as error:
             return error
@@ -302,6 +302,14 @@ class ChapterDao:
             for row in cursor:
                 id = row[0]
             self.__db.commit()
+            # print (id)
+            # cursor.execute("SELECT * FROM chapters WHERE manga_id = %s", [manga_id])
+            # records = cursor.fetchall()
+            # print("Select data is: ")
+            # for record in records:
+            #     print(record)
+            # print()
+            # self.__db.commit()
             return (True, id)
         except Exception as error:
             cursor = self.__db.cursor()
@@ -334,6 +342,31 @@ class ChapterDao:
             results.append(chapter.str)
         return results
 
+    def delete(self, id):
+        try:
+            cursor = self.__db.cursor()
+            cursor.execute("DELETE FROM chapters WHERE id = %s", [id])
+            self.__db.commit()
+            return True
+        except Exception as error:
+            cursor = self.__db.cursor()
+            cursor.execute("ROLLBACK")
+            self.__db.commit()
+            return error
+
+    def update(self, chapter):
+        try:
+            cursor = self.__db.cursor()
+            cursor.execute("UPDATE chapters SET name = %s, manga_id = %s WHERE id = %s",
+                           [chapter.name, chapter.manga, chapter.id])
+            self.__db.commit()
+            return True
+        except Exception as error:
+            cursor = self.__db.cursor()
+            cursor.execute("ROLLBACK")
+            self.__db.commit()
+            return error
+
 
 class ImagesDao:
     def __init__(self, db):
@@ -344,10 +377,6 @@ class ImagesDao:
             cursor = self.__db.cursor()
             cursor.execute("INSERT INTO images (url, chapter_id) VALUES (%s,%s)", [
                            url, chapter_id])
-            results = []
-            id = 0
-            for row in cursor:
-                id = row[0]
             self.__db.commit()
             return True
         except Exception as error:
@@ -369,3 +398,16 @@ class ImagesDao:
             image = Images(url, chapter_id, id)
             results.append(image.url)
         return results
+
+    def delete(self, chapter_id):
+        try:
+            cursor = self.__db.cursor()
+            cursor.execute(
+                "DELETE FROM images WHERE chapter_id = %s", [chapter_id])
+            self.__db.commit()
+            return True
+        except Exception as error:
+            cursor = self.__db.cursor()
+            cursor.execute("ROLLBACK")
+            self.__db.commit()
+            return error
